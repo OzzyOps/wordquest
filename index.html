@@ -11,137 +11,176 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@600&display=swap" rel="stylesheet">
 <style>
+/* ══════════ TOKENS ══════════ */
 :root{
-  --ink:#080810;--ink2:#0f0f1c;
-  --glass:rgba(255,255,255,.042);--gl2:rgba(255,255,255,.07);
-  --rim:rgba(255,255,255,.08);--rim2:rgba(255,255,255,.15);
-  --txt:#eeeaf8;--muted:#7a7798;--soft:#afa9c8;
-  --gold:#f5c842;--goldd:#c8880a;
-  --rose:#ff6b8a;--cyan:#00d9c4;
-  --v:#8b5cf6;--v2:#6d28d9;
-  --green:#4ade80;--green-bg:#538d4e;
-  --yellow:#c9b458;--yellow-bg:#b59f3b;
-  --grey-bg:#3a3a3c;--grey-border:#565758;
+  --ink:#080810;
+  --glass:rgba(255,255,255,.045);
+  --gl2:rgba(255,255,255,.075);
+  --rim:rgba(255,255,255,.08);
+  --rim2:rgba(255,255,255,.16);
+  --txt:#eeeaf8;
+  --muted:#7a7798;
+  --soft:#afa9c8;
+  --gold:#f5c842;
+  --goldd:#c8880a;
+  --rose:#ff6b8a;
+  --cyan:#00d9c4;
+  --v:#8b5cf6;
+  --v2:#6d28d9;
+  --green-bg:#538d4e;
+  --yellow-bg:#b59f3b;
+  --grey-bg:#3a3a3c;
+  --grey-bdr:#818384;
   --red:#ff4d6a;
-  --fh:'Syne',sans-serif;--fb:'DM Sans',sans-serif;--fm:'DM Mono',monospace;
-  --r:10px;--r2:16px;--ease:cubic-bezier(.22,1,.36,1);
-  --sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px);
-  --sal:env(safe-area-inset-left,0px);--sar:env(safe-area-inset-right,0px);
-  /* Wordle tile size — computed responsively in JS */
-  --ts:52px;
+  --fh:'Syne',sans-serif;
+  --fb:'DM Sans',sans-serif;
+  --fm:'DM Mono',monospace;
+  --r:10px;
+  --r2:16px;
+  --ease:cubic-bezier(.22,1,.36,1);
+  --sat:env(safe-area-inset-top,0px);
+  --sab:env(safe-area-inset-bottom,0px);
+  /* Tile & key sizes - set by JS */
+  --ts:48px;
+  --kh:52px;
 }
+
+/* ══════════ RESET ══════════ */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{height:100%;-webkit-text-size-adjust:100%}
-body{font-family:var(--fb);background:var(--ink);color:var(--txt);min-height:100vh;min-height:-webkit-fill-available;overflow-x:hidden;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;overscroll-behavior:none}
+html{height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{
+  font-family:var(--fb);
+  background:var(--ink);
+  color:var(--txt);
+  /* use dvh so Android Chrome omnibar doesn't cut content */
+  min-height:100dvh;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+  -webkit-tap-highlight-color:transparent;
+  overscroll-behavior:none;
+  touch-action:pan-x pan-y;
+}
 
-/* ── AURORA ── */
+/* ══════════ AURORA ══════════ */
 .aurora{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
-.ab{position:absolute;border-radius:50%;filter:blur(90px);animation:drift var(--d,20s) ease-in-out infinite alternate}
-.ab1{width:600px;height:600px;background:#5b21b6;opacity:.13;top:-200px;left:-100px;--d:24s}
-.ab2{width:500px;height:500px;background:#0e7490;opacity:.11;bottom:-150px;right:-80px;--d:18s;animation-direction:alternate-reverse}
-.ab3{width:400px;height:400px;background:#be185d;opacity:.08;top:40%;left:35%;--d:28s}
-@keyframes drift{0%{transform:translate(0,0) scale(1)}100%{transform:translate(50px,45px) scale(1.1)}}
-.mesh{position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.016) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.016) 1px,transparent 1px);background-size:52px 52px}
+.ab{position:absolute;border-radius:50%;filter:blur(80px);animation:drift var(--d,20s) ease-in-out infinite alternate;will-change:transform}
+.ab1{width:500px;height:500px;background:#5b21b6;opacity:.13;top:-180px;left:-100px;--d:24s}
+.ab2{width:420px;height:420px;background:#0e7490;opacity:.11;bottom:-120px;right:-80px;--d:18s;animation-direction:alternate-reverse}
+.ab3{width:350px;height:350px;background:#be185d;opacity:.08;top:40%;left:30%;--d:28s}
+@keyframes drift{0%{transform:translate(0,0) scale(1)}100%{transform:translate(45px,40px) scale(1.08)}}
+.mesh{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(255,255,255,.014) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.014) 1px,transparent 1px);
+  background-size:52px 52px}
 
-/* ── LOADING ── */
-#screen-loading{
+/* ══════════ LOADING ══════════ */
+#sl{
   position:fixed;inset:0;z-index:9999;
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.75rem;
   background:var(--ink);
-  transition:opacity .55s var(--ease),transform .55s var(--ease);
+  transition:opacity .5s var(--ease),transform .5s var(--ease);
 }
-#screen-loading.out{opacity:0;pointer-events:none;transform:scale(1.05)}
-.load-logo{font-family:var(--fh);font-size:clamp(2.8rem,9vw,4.5rem);font-weight:800;letter-spacing:-.03em;background:linear-gradient(150deg,#fff 10%,#c4b5fd 45%,#00d9c4 75%,#f5c842 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
-.load-ring{width:52px;height:52px;border-radius:50%;border:3px solid var(--rim2);border-top-color:var(--v);animation:spin 0.85s linear infinite}
+#sl.out{opacity:0;pointer-events:none;transform:scale(1.04)}
+.load-logo{
+  font-family:var(--fh);font-size:clamp(2.8rem,9vw,4.5rem);
+  font-weight:800;letter-spacing:-.03em;line-height:1;
+  background:linear-gradient(150deg,#fff 10%,#c4b5fd 45%,#00d9c4 75%,#f5c842 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.load-ring{
+  width:52px;height:52px;border-radius:50%;
+  border:3px solid rgba(255,255,255,.15);
+  border-top-color:var(--v);
+  animation:spin .85s linear infinite;
+}
 @keyframes spin{to{transform:rotate(360deg)}}
 .load-sub{font-size:.78rem;color:var(--muted);font-weight:500;letter-spacing:.06em}
 
-/* ── SCREENS ── */
-.screen{display:none;min-height:100vh;min-height:-webkit-fill-available;position:relative;z-index:1}
+/* ══════════ SCREENS ══════════ */
+.screen{display:none;min-height:100dvh;position:relative;z-index:1}
 .screen.active{display:flex;flex-direction:column}
-.fade-up{animation:fadeUp .35s var(--ease)}
-@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.fade-up{animation:fadeUp .32s var(--ease)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 
-/* ── TYPE ── */
-.h-disp{font-family:var(--fh);font-size:clamp(2.6rem,8vw,4.2rem);font-weight:800;line-height:1;letter-spacing:-.03em}
-.h-lg{font-family:var(--fh);font-size:clamp(1.3rem,4vw,1.8rem);font-weight:800;letter-spacing:-.01em}
-.eyebrow{font-size:.63rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--v);margin-bottom:.5rem}
-.label-sm{font-size:.63rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+/* ══════════ TYPE ══════════ */
+.h-disp{font-family:var(--fh);font-size:clamp(2.6rem,8vw,4rem);font-weight:800;line-height:1;letter-spacing:-.03em}
+.h-lg{font-family:var(--fh);font-size:clamp(1.3rem,4vw,1.75rem);font-weight:800;letter-spacing:-.01em}
+.eyebrow{font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--v);margin-bottom:.48rem}
+.label-sm{font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
 
-/* ── CARD ── */
-.card{background:var(--glass);border:1px solid var(--rim);border-radius:var(--r2);padding:1.1rem 1.3rem;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+/* ══════════ CARD ══════════ */
+.card{background:var(--glass);border:1px solid var(--rim);border-radius:var(--r2);padding:1.05rem 1.25rem;-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
 
-/* ── BUTTONS ── */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:13px 22px;border-radius:var(--r);font-family:var(--fb);font-weight:700;font-size:.92rem;cursor:pointer;border:none;text-decoration:none;transition:transform .15s var(--ease),box-shadow .2s var(--ease);user-select:none;white-space:nowrap;-webkit-appearance:none;position:relative;overflow:hidden}
+/* ══════════ BUTTONS ══════════ */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  padding:13px 20px;border-radius:var(--r);
+  font-family:var(--fb);font-weight:700;font-size:.9rem;
+  cursor:pointer;border:none;text-decoration:none;
+  transition:transform .15s var(--ease),box-shadow .18s var(--ease);
+  user-select:none;white-space:nowrap;-webkit-appearance:none;
+  position:relative;overflow:hidden;touch-action:manipulation;
+}
 .btn::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,0);transition:background .15s}
-.btn:active::after{background:rgba(255,255,255,.08)}
+.btn:active::after{background:rgba(255,255,255,.1)}
 .btn:active{transform:scale(.95)!important}
 .bv{background:linear-gradient(135deg,var(--v2),var(--v));color:#fff}
-.bv:hover{box-shadow:0 0 26px rgba(139,92,246,.4);transform:translateY(-1px)}
+.bv:hover{box-shadow:0 0 24px rgba(139,92,246,.38);transform:translateY(-1px)}
 .bc{background:linear-gradient(135deg,#0a6474,var(--cyan));color:var(--ink);font-weight:800}
-.bc:hover{box-shadow:0 0 24px rgba(0,217,196,.36);transform:translateY(-1px)}
+.bc:hover{box-shadow:0 0 22px rgba(0,217,196,.34);transform:translateY(-1px)}
 .bgold{background:linear-gradient(135deg,var(--goldd),var(--gold));color:var(--ink);font-weight:800}
-.bgold:hover{box-shadow:0 0 22px rgba(245,200,66,.33);transform:translateY(-1px)}
+.bgold:hover{box-shadow:0 0 20px rgba(245,200,66,.32);transform:translateY(-1px)}
 .bgh{background:var(--gl2);border:1px solid var(--rim2);color:var(--soft)}
 .bgh:hover{background:rgba(255,255,255,.1);color:var(--txt)}
-.btn-sm{padding:8px 15px;font-size:.78rem;border-radius:9px}
-.btn-lg{padding:16px 30px;font-size:.98rem;border-radius:14px}
-.btn-xl{padding:18px 24px;font-size:1rem;border-radius:16px;width:100%}
+.btn-sm{padding:9px 14px;font-size:.78rem;border-radius:9px}
+.btn-lg{padding:15px 28px;font-size:.96rem;border-radius:14px}
 .btn:disabled{opacity:.35;pointer-events:none}
 
-/* ════════════════════════
-   HOME
-════════════════════════ */
-#sh{align-items:center;justify-content:center;padding:calc(2rem + var(--sat)) 1.4rem calc(2rem + var(--sab));gap:0;text-align:center}
-.home-inner{display:flex;flex-direction:column;align-items:center;gap:2.1rem;width:100%;max-width:360px}
+/* ══════════ HOME ══════════ */
+#sh{align-items:center;justify-content:center;padding:calc(1.8rem + var(--sat)) 1.4rem calc(1.8rem + var(--sab));text-align:center}
+.home-inner{display:flex;flex-direction:column;align-items:center;gap:1.9rem;width:100%;max-width:360px}
 .wordmark-wrap{position:relative}
-.wm-glow{position:absolute;inset:-50px;background:radial-gradient(ellipse,rgba(109,40,217,.25) 0%,transparent 65%);border-radius:50%;pointer-events:none}
+.wm-glow{position:absolute;inset:-50px;background:radial-gradient(ellipse,rgba(109,40,217,.22) 0%,transparent 65%);border-radius:50%;pointer-events:none}
 .wm-txt{background:linear-gradient(150deg,#fff 10%,#c4b5fd 45%,#00d9c4 75%,#f5c842 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.home-tagline{color:var(--muted);font-size:.9rem;font-weight:500;margin-top:.4rem;letter-spacing:.025em}
-
-.stats-row{display:flex;gap:.7rem;justify-content:center}
-.stat-pill{background:var(--glass);border:1px solid var(--rim);border-radius:100px;padding:.48rem 1.1rem;display:flex;flex-direction:column;align-items:center;min-width:76px}
-.stat-pill .sv{font-family:var(--fh);font-size:1.25rem;font-weight:800;color:var(--gold)}
-.stat-pill .sk{font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:1px}
-
-.mode-cards{display:flex;flex-direction:column;gap:.7rem;width:100%}
-.mode-card{display:flex;align-items:center;gap:.95rem;border-radius:16px;padding:1.1rem 1.2rem;cursor:pointer;border:1.5px solid transparent;transition:transform .18s var(--ease),box-shadow .2s var(--ease),border-color .2s;text-align:left;position:relative;overflow:hidden}
+.home-tagline{color:var(--muted);font-size:.88rem;font-weight:500;margin-top:.38rem;letter-spacing:.025em}
+.stats-row{display:flex;gap:.65rem;justify-content:center}
+.stat-pill{background:var(--glass);border:1px solid var(--rim);border-radius:100px;padding:.45rem 1rem;display:flex;flex-direction:column;align-items:center;min-width:72px}
+.stat-pill .sv{font-family:var(--fh);font-size:1.2rem;font-weight:800;color:var(--gold)}
+.stat-pill .sk{font-size:.57rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:1px}
+.mode-cards{display:flex;flex-direction:column;gap:.65rem;width:100%}
+.mode-card{display:flex;align-items:center;gap:.9rem;border-radius:16px;padding:1.05rem 1.15rem;cursor:pointer;border:1.5px solid transparent;transition:transform .16s var(--ease),box-shadow .18s var(--ease),border-color .18s;text-align:left;position:relative;overflow:hidden;touch-action:manipulation}
 .mode-card:active{transform:scale(.97)}
-.mc-h2h{background:linear-gradient(135deg,rgba(139,92,246,.18),rgba(109,40,217,.07));border-color:rgba(139,92,246,.28)}
-.mc-h2h:hover{box-shadow:0 0 28px rgba(139,92,246,.2);border-color:rgba(139,92,246,.5);transform:translateY(-2px)}
-.mc-daily{background:linear-gradient(135deg,rgba(245,200,66,.17),rgba(200,136,10,.07));border-color:rgba(245,200,66,.28)}
-.mc-daily:hover{box-shadow:0 0 28px rgba(245,200,66,.18);border-color:rgba(245,200,66,.5);transform:translateY(-2px)}
-.mc-chill{background:linear-gradient(135deg,rgba(0,217,196,.15),rgba(14,116,148,.06));border-color:rgba(0,217,196,.26)}
-.mc-chill:hover{box-shadow:0 0 28px rgba(0,217,196,.16);border-color:rgba(0,217,196,.48);transform:translateY(-2px)}
-.mc-icon{font-size:2rem;flex-shrink:0;line-height:1}
-.mc-text .mc-title{font-family:var(--fh);font-size:1rem;font-weight:800;margin-bottom:2px}
-.mc-text .mc-desc{font-size:.73rem;color:var(--soft);line-height:1.4}
+.mc-h2h{background:linear-gradient(135deg,rgba(139,92,246,.17),rgba(109,40,217,.06));border-color:rgba(139,92,246,.26)}
+.mc-h2h:hover{box-shadow:0 0 26px rgba(139,92,246,.18);border-color:rgba(139,92,246,.48);transform:translateY(-2px)}
+.mc-daily{background:linear-gradient(135deg,rgba(245,200,66,.16),rgba(200,136,10,.06));border-color:rgba(245,200,66,.26)}
+.mc-daily:hover{box-shadow:0 0 26px rgba(245,200,66,.16);border-color:rgba(245,200,66,.48);transform:translateY(-2px)}
+.mc-chill{background:linear-gradient(135deg,rgba(0,217,196,.14),rgba(14,116,148,.05));border-color:rgba(0,217,196,.24)}
+.mc-chill:hover{box-shadow:0 0 26px rgba(0,217,196,.15);border-color:rgba(0,217,196,.46);transform:translateY(-2px)}
+.mc-icon{font-size:1.85rem;flex-shrink:0;line-height:1}
+.mc-text .mc-title{font-family:var(--fh);font-size:.95rem;font-weight:800;margin-bottom:2px}
+.mc-text .mc-desc{font-size:.71rem;color:var(--soft);line-height:1.4}
 .mc-h2h .mc-title{color:var(--v)}
 .mc-daily .mc-title{color:var(--gold)}
 .mc-chill .mc-title{color:var(--cyan)}
-.mc-arrow{margin-left:auto;font-size:1.1rem;opacity:.4;flex-shrink:0}
-
-.home-footer{display:flex;gap:.65rem;width:100%}
+.mc-arrow{margin-left:auto;font-size:1rem;opacity:.38;flex-shrink:0}
+.home-footer{display:flex;gap:.6rem;width:100%}
 .home-footer .btn{flex:1}
 
-/* ════════════════════════
-   SETTINGS
-════════════════════════ */
-#ss{padding:calc(1.4rem + var(--sat)) 1.2rem calc(1.4rem + var(--sab));align-items:center;overflow-y:auto}
-.ss-in{width:100%;max-width:480px;display:flex;flex-direction:column;gap:.95rem}
-.age-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin-top:.5rem}
-.age-btn{background:var(--glass);border:1px solid var(--rim);border-radius:var(--r);padding:.72rem .4rem;text-align:center;cursor:pointer;transition:all .2s var(--ease)}
-.age-btn:hover{border-color:var(--v);background:rgba(139,92,246,.12)}
-.age-btn.sel{border-color:var(--v);background:rgba(139,92,246,.2);box-shadow:0 0 0 1.5px rgba(139,92,246,.3)}
-.age-ico{font-size:1.3rem;display:block;margin-bottom:2px}
-.age-lbl{font-size:.73rem;font-weight:700;color:var(--txt);display:block}
-.age-rng{font-size:.6rem;color:var(--muted)}
-.tgl-row{display:flex;align-items:center;justify-content:space-between;background:var(--glass);border:1px solid var(--rim);border-radius:var(--r);padding:.82rem 1.05rem;cursor:pointer;user-select:none;transition:background .15s}
+/* ══════════ SETTINGS ══════════ */
+#ss{padding:calc(1.3rem + var(--sat)) 1.15rem calc(1.3rem + var(--sab));align-items:center;overflow-y:auto}
+.ss-in{width:100%;max-width:480px;display:flex;flex-direction:column;gap:.9rem}
+.age-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.48rem;margin-top:.48rem}
+.age-btn{background:var(--glass);border:1px solid var(--rim);border-radius:var(--r);padding:.68rem .38rem;text-align:center;cursor:pointer;transition:all .18s var(--ease);touch-action:manipulation}
+.age-btn:hover{border-color:var(--v);background:rgba(139,92,246,.1)}
+.age-btn.sel{border-color:var(--v);background:rgba(139,92,246,.18);box-shadow:0 0 0 1.5px rgba(139,92,246,.28)}
+.age-ico{font-size:1.25rem;display:block;margin-bottom:2px}
+.age-lbl{font-size:.72rem;font-weight:700;color:var(--txt);display:block}
+.age-rng{font-size:.59rem;color:var(--muted)}
+.tgl-row{display:flex;align-items:center;justify-content:space-between;background:var(--glass);border:1px solid var(--rim);border-radius:var(--r);padding:.78rem 1rem;cursor:pointer;user-select:none;transition:background .15s;touch-action:manipulation}
 .tgl-row:hover{background:var(--gl2)}
-.tgl-track{width:42px;height:23px;border-radius:12px;background:rgba(255,255,255,.1);position:relative;transition:background .25s;flex-shrink:0}
+.tgl-track{width:42px;height:23px;border-radius:12px;background:rgba(255,255,255,.1);position:relative;transition:background .22s;flex-shrink:0}
 .tgl-row.on .tgl-track{background:var(--v2)}
-.tgl-thumb{position:absolute;top:2.5px;left:2.5px;width:18px;height:18px;border-radius:50%;background:#fff;transition:left .22s var(--ease),box-shadow .2s}
-.tgl-row.on .tgl-thumb{left:21.5px;box-shadow:0 0 8px rgba(139,92,246,.55)}
+.tgl-thumb{position:absolute;top:2.5px;left:2.5px;width:18px;height:18px;border-radius:50%;background:#fff;transition:left .2s var(--ease),box-shadow .18s}
+.tgl-row.on .tgl-thumb{left:21.5px;box-shadow:0 0 7px rgba(139,92,246,.5)}
 .tgl-info .ti{font-size:.84rem;font-weight:600;color:var(--txt)}
 .tgl-info .ts{font-size:.68rem;color:var(--muted);margin-top:1px}
 .names-row{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-top:.5rem}
@@ -151,10 +190,8 @@ body{font-family:var(--fb);background:var(--ink);color:var(--txt);min-height:100
 .fi:focus{border-color:var(--v);box-shadow:0 0 0 3px rgba(139,92,246,.16)}
 .fi::placeholder{color:var(--muted);font-weight:400}
 
-/* ════════════════════════
-   WORD ENTRY (H2H)
-════════════════════════ */
-#swe{padding:calc(1.4rem + var(--sat)) 1.2rem calc(1.4rem + var(--sab));align-items:center;overflow-y:auto}
+/* ══════════ WORD ENTRY ══════════ */
+#swe{padding:calc(1.3rem + var(--sat)) 1.15rem calc(1.3rem + var(--sab));align-items:center;overflow-y:auto}
 .we-in{width:100%;max-width:440px;display:flex;flex-direction:column;gap:.9rem}
 .priv-strip{display:flex;align-items:center;gap:9px;background:rgba(245,200,66,.07);border:1px solid rgba(245,200,66,.2);border-radius:var(--r);padding:.68rem .95rem;font-size:.78rem;font-weight:600;color:var(--gold)}
 .sw-wrap{position:relative;margin-top:.35rem}
@@ -162,203 +199,237 @@ body{font-family:var(--fb);background:var(--ink);color:var(--txt);min-height:100
 .si.show{-webkit-text-security:none}
 .si:focus{box-shadow:0 0 0 3px rgba(139,92,246,.2)}
 .si:disabled{opacity:.4;cursor:default}
-.eye-btn{position:absolute;right:11px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:.95rem;padding:6px;transition:color .15s}
+.eye-btn{position:absolute;right:11px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:.95rem;padding:6px;touch-action:manipulation}
 .eye-btn:hover{color:var(--txt)}
-.err{font-size:.74rem;color:var(--red);min-height:.95em;margin-top:2px}
+.err{font-size:.74rem;color:var(--red);min-height:.95em;margin-top:2px;line-height:1.4}
+.checking-msg{font-size:.74rem;color:var(--cyan);margin-top:2px;display:none}
 .sug-wrap{display:flex;flex-wrap:wrap;gap:.38rem;margin-top:.4rem}
-.sug{border:1px solid var(--rim2);background:var(--glass);border-radius:100px;padding:4px 12px;font-size:.73rem;font-weight:600;color:var(--soft);cursor:pointer;transition:all .13s}
+.sug{border:1px solid var(--rim2);background:var(--glass);border-radius:100px;padding:4px 12px;font-size:.73rem;font-weight:600;color:var(--soft);cursor:pointer;transition:all .13s;touch-action:manipulation}
 .sug:hover{border-color:var(--cyan);color:var(--cyan);background:rgba(0,217,196,.08)}
 .sug:active{transform:scale(.93)}
 .cat-wrap{display:flex;flex-wrap:wrap;gap:.38rem;margin-top:.38rem}
-.cc{border:1px solid var(--rim2);background:var(--glass);border-radius:100px;padding:4px 11px;font-size:.7rem;font-weight:600;color:var(--muted);cursor:pointer;transition:all .13s}
+.cc{border:1px solid var(--rim2);background:var(--glass);border-radius:100px;padding:4px 11px;font-size:.7rem;font-weight:600;color:var(--muted);cursor:pointer;transition:all .13s;touch-action:manipulation}
 .cc:hover,.cc.active{border-color:var(--cyan);color:var(--cyan);background:rgba(0,217,196,.08)}
 
-/* ════════════════════════
-   WORDLE GAME SCREEN
-════════════════════════ */
+/* ══════════ GAME SCREEN ══════════
+   Layout: header → hints → grid → sub-row → keyboard
+   Uses flex column; grid + keyboard fill remaining space.
+   Key insight: on Android we use dvh and explicit flex 
+   to prevent the keyboard from overlapping game content.
+══════════════════════════════════ */
 #sg{
-  padding:calc(.6rem + var(--sat)) .5rem calc(.6rem + var(--sab));
-  gap:.5rem;
-  max-width:100%;overflow:hidden;
+  /* stack children vertically, fill full dynamic viewport height */
+  display:flex;flex-direction:column;
+  height:100dvh;
+  padding:calc(4px + var(--sat)) 8px calc(4px + var(--sab));
+  gap:4px;
+  overflow:hidden;
 }
 
 /* header bar */
 .game-header{
   display:flex;align-items:center;justify-content:space-between;
-  padding:.55rem .75rem;background:var(--glass);border:1px solid var(--rim);
-  border-radius:14px;
+  padding:8px 12px;
+  background:var(--glass);border:1px solid var(--rim);border-radius:14px;
+  flex-shrink:0;
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
 }
-.gh-left{display:flex;align-items:center;gap:.55rem}
-.gh-title{font-family:var(--fh);font-size:.9rem;font-weight:800;letter-spacing:.01em}
-.gh-mode{font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:1px}
-.sw-disp{font-family:var(--fm);font-size:1.15rem;font-weight:600;color:var(--gold);letter-spacing:.02em;min-width:60px;text-align:center}
-.sw-disp.run{color:var(--green)}
+.gh-left{display:flex;align-items:center;gap:.5rem}
+.gh-title{font-family:var(--fh);font-size:.88rem;font-weight:800}
+.gh-mode{font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:1px}
+.sw-disp{font-family:var(--fm);font-size:1.1rem;font-weight:600;color:var(--gold);min-width:54px;text-align:center}
+.sw-disp.run{color:#4ade80}
 .sw-disp.done{color:var(--rose)}
+.gh-btns{display:flex;gap:6px}
 
-/* toast message */
-.toast{
-  position:fixed;top:calc(80px + var(--sat));left:50%;transform:translateX(-50%);
-  background:var(--txt);color:var(--ink);
-  font-family:var(--fb);font-size:.82rem;font-weight:700;
-  padding:.55rem 1.1rem;border-radius:8px;
-  pointer-events:none;z-index:500;
-  opacity:0;transition:opacity .2s;white-space:nowrap;
-}
-.toast.show{opacity:1}
+/* hint bars */
+.hint-bar,.ai-bar{flex-shrink:0;border-radius:var(--r);padding:6px 10px;font-size:.74rem;font-weight:600;display:none}
+.hint-bar{background:rgba(245,200,66,.06);border:1px solid rgba(245,200,66,.17);color:var(--gold)}
+.hint-bar.show{display:flex;align-items:center;gap:8px}
+.ai-bar{background:rgba(139,92,246,.07);border:1px solid rgba(139,92,246,.2);color:var(--soft);align-items:flex-start;gap:8px}
+.ai-bar.show{display:flex}
+.ai-ico{font-size:.88rem;flex-shrink:0;margin-top:1px}
 
-/* ── WORDLE GRID ── */
+/* grid */
 .grid-wrap{
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  flex:0 0 auto;
-  padding:.3rem 0;
+  flex:1 1 auto;       /* takes all remaining vertical space */
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+  min-height:0;        /* critical — lets flex shrink below content */
 }
 .grid{display:flex;flex-direction:column;gap:5px}
 .grid-row{display:flex;gap:5px}
 
+/* wordle tiles */
 .wt{
   width:var(--ts);height:var(--ts);
-  border:2px solid var(--grey-border);
+  border:2px solid var(--grey-bdr);
   border-radius:4px;
   display:flex;align-items:center;justify-content:center;
-  font-family:var(--fm);font-size:calc(var(--ts)*.4);font-weight:700;
+  font-family:var(--fm);font-size:calc(var(--ts) * .38);font-weight:700;
   text-transform:uppercase;color:var(--txt);
   background:transparent;
-  transition:border-color .05s;
-  position:relative;
   user-select:none;
+  /* hardware acceleration helps Android */
+  will-change:transform;
+  -webkit-backface-visibility:hidden;
+  backface-visibility:hidden;
 }
-/* current active row tiles */
-.wt.active-empty{border-color:var(--rim2)}
-/* filled but not submitted */
-.wt.filled{border-color:#999;animation:wt-pop .1s ease}
-@keyframes wt-pop{0%{transform:scale(1)}50%{transform:scale(1.1)}100%{transform:scale(1)}}
-/* revealed states — after submit with flip */
-.wt.flip{animation:wt-flip .5s ease forwards;animation-delay:var(--fd,0s)}
+.wt.active-row{border-color:var(--rim2)}
+.wt.filled{border-color:#aaa;animation:wt-pop .1s ease}
+@keyframes wt-pop{0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
+/* tile reveal flip */
+.wt.flip{animation:wt-flip .44s ease forwards;animation-delay:var(--fd,0s)}
 @keyframes wt-flip{
-  0%{transform:rotateX(0deg)}
-  50%{transform:rotateX(-90deg);background:transparent;border-color:var(--grey-border)}
-  51%{transform:rotateX(-90deg)}
-  100%{transform:rotateX(0deg)}
+  0%{transform:rotateX(0)}
+  49%{transform:rotateX(-90deg)}
+  50%{transform:rotateX(-90deg)}
+  100%{transform:rotateX(0)}
 }
 .wt.correct{background:var(--green-bg);border-color:var(--green-bg);color:#fff}
 .wt.present{background:var(--yellow-bg);border-color:var(--yellow-bg);color:#fff}
-.wt.absent{background:var(--grey-bg);border-color:var(--grey-bg);color:#fff}
-/* shake on invalid word */
-.grid-row.shake{animation:shake .5s ease}
-@keyframes shake{0%,100%{transform:translateX(0)}10%,30%,50%,70%,90%{transform:translateX(-4px)}20%,40%,60%,80%{transform:translateX(4px)}}
+.wt.absent {background:var(--grey-bg);border-color:var(--grey-bg);color:#fff}
+/* shake invalid row */
+.grid-row.shake{animation:shake .45s ease}
+@keyframes shake{0%,100%{transform:translateX(0)}15%,45%,75%{transform:translateX(-5px)}30%,60%,90%{transform:translateX(5px)}}
 /* bounce on win */
-.wt.bounce{animation:bounce .4s ease forwards;animation-delay:var(--bd,0s)}
-@keyframes bounce{0%,100%{transform:translateY(0)}40%{transform:translateY(-16px)}60%{transform:translateY(-8px)}}
+.wt.bounce{animation:bounce .38s ease forwards;animation-delay:var(--bd,0s)}
+@keyframes bounce{0%,100%{transform:translateY(0)}45%{transform:translateY(-14px)}70%{transform:translateY(-7px)}}
 
-/* ── WORDLE KEYBOARD ── */
-.kb-wrap{
-  display:flex;flex-direction:column;align-items:center;gap:6px;
-  padding-bottom:calc(.25rem + var(--sab));
+/* sub-row: category + new-word btn */
+.game-sub{
+  display:flex;align-items:center;gap:8px;
   flex-shrink:0;
+  min-height:30px;
 }
-.kb-row2{display:flex;gap:5px;justify-content:center}
+.cat-tag{display:none;align-items:center;gap:5px;background:rgba(0,217,196,.09);border:1px solid rgba(0,217,196,.2);border-radius:8px;padding:4px 10px;font-size:.65rem;font-weight:700;color:var(--cyan)}
+.cat-tag.show{display:flex}
+#rand-btn{display:none;margin-left:auto}
+
+/* keyboard */
+.kb-wrap{
+  flex-shrink:0;
+  display:flex;flex-direction:column;gap:5px;
+  padding-bottom:env(safe-area-inset-bottom, 0px);
+  align-items:center;
+  /* prevent Android bottom bar from overlapping */
+  padding-bottom:max(env(safe-area-inset-bottom,0px), 4px);
+}
+.kb-row2{display:flex;gap:5px;justify-content:center;width:100%}
 .wkey{
-  height:56px;min-width:36px;flex:1;max-width:44px;
+  height:var(--kh);
+  flex:1;
+  /* clamp width so keys don't get too wide on iPad */
+  max-width:44px;
+  min-width:0;
   border-radius:6px;border:none;
-  background:var(--grey-border);color:var(--txt);
-  font-family:var(--fb);font-size:.85rem;font-weight:700;
-  cursor:pointer;display:flex;align-items:center;justify-content:center;
-  user-select:none;touch-action:manipulation;
-  transition:background .15s,transform .1s;
-  -webkit-appearance:none;position:relative;overflow:hidden;
+  background:var(--grey-bdr);color:var(--txt);
+  font-family:var(--fb);font-size:.82rem;font-weight:700;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  user-select:none;-webkit-user-select:none;
+  touch-action:manipulation;
+  -webkit-touch-callout:none;
+  transition:background .12s;
+  -webkit-appearance:none;
+  position:relative;overflow:hidden;
+  will-change:transform;
 }
 .wkey::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,0);transition:background .1s}
-.wkey:active::after{background:rgba(255,255,255,.12)}
-.wkey:active{transform:scale(.94)}
-.wkey.wide{min-width:56px;max-width:62px;font-size:.72rem}
+.wkey:active::after{background:rgba(255,255,255,.14)}
+.wkey:active{transform:scale(.91)}
+.wkey.wide{flex:1.55;max-width:60px;font-size:.66rem}
 .wkey.correct{background:var(--green-bg)}
 .wkey.present{background:var(--yellow-bg)}
 .wkey.absent{background:var(--grey-bg);color:#666}
 
-/* hint + ai bar */
-.hint-bar{display:none;align-items:center;gap:8px;background:rgba(245,200,66,.06);border:1px solid rgba(245,200,66,.17);border-radius:var(--r);padding:.58rem .88rem;font-size:.77rem;color:var(--gold);font-weight:600}
-.hint-bar.show{display:flex}
-.ai-bar{display:none;align-items:flex-start;gap:8px;background:rgba(139,92,246,.07);border:1px solid rgba(139,92,246,.2);border-radius:var(--r);padding:.72rem .88rem;font-size:.77rem;color:var(--soft)}
-.ai-bar.show{display:flex}
-.ai-ico{font-size:.9rem;flex-shrink:0;margin-top:1px}
-.game-sub-row{display:flex;gap:.5rem;align-items:stretch;flex-shrink:0}
-.game-sub-row .btn{flex:1;padding:9px 8px;font-size:.76rem;border-radius:9px}
+/* toast */
+.toast{
+  position:fixed;top:calc(70px + var(--sat));left:50%;transform:translateX(-50%);
+  background:var(--txt);color:var(--ink);
+  font-family:var(--fb);font-size:.8rem;font-weight:700;
+  padding:7px 16px;border-radius:8px;
+  pointer-events:none;z-index:700;
+  opacity:0;transition:opacity .18s;white-space:nowrap;
+  max-width:85vw;text-align:center;
+}
+.toast.show{opacity:1}
 
-/* ── AI PULSE ── */
+/* ai pulse */
 .ai-pulse{display:inline-flex;gap:4px;align-items:center}
 .ai-pulse span{width:5px;height:5px;border-radius:50%;background:var(--v);animation:apulse .9s ease-in-out infinite}
 .ai-pulse span:nth-child(2){animation-delay:.15s}
 .ai-pulse span:nth-child(3){animation-delay:.3s}
 @keyframes apulse{0%,100%{opacity:.25;transform:scale(.65)}50%{opacity:1;transform:scale(1)}}
 
-/* ════════════════════════
-   COUNTDOWN
-════════════════════════ */
-.countdown-ov{position:fixed;inset:0;z-index:500;background:rgba(8,8,16,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem}
-.cd-num{font-family:var(--fh);font-size:8rem;font-weight:800;background:linear-gradient(135deg,var(--v),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:cdPop .75s var(--ease)}
-@keyframes cdPop{0%{transform:scale(2.1);opacity:0}65%{transform:scale(.93)}100%{transform:scale(1);opacity:1}}
-.cd-lbl{font-size:.95rem;color:var(--muted);font-weight:600}
+/* ══════════ COUNTDOWN ══════════ */
+.cd-ov{position:fixed;inset:0;z-index:600;background:rgba(8,8,16,.9);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem}
+.cd-num{font-family:var(--fh);font-size:8rem;font-weight:800;background:linear-gradient(135deg,var(--v),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:cdPop .7s var(--ease)}
+@keyframes cdPop{0%{transform:scale(2);opacity:0}65%{transform:scale(.92)}100%{transform:scale(1);opacity:1}}
+.cd-lbl{font-size:.92rem;color:var(--muted);font-weight:600}
 
-/* ════════════════════════
-   RESULT
-════════════════════════ */
-#sr{align-items:center;justify-content:flex-start;padding:calc(1.5rem + var(--sat)) 1.2rem calc(1.5rem + var(--sab));gap:1rem;overflow-y:auto}
-.trophy{font-size:4.2rem;text-align:center;animation:popIn .5s var(--ease)}
-@keyframes popIn{0%{transform:scale(0) rotate(-20deg);opacity:0}70%{transform:scale(1.14) rotate(4deg)}100%{transform:scale(1);opacity:1}}
-.res-word{font-family:var(--fm);font-size:clamp(1.4rem,5vw,1.9rem);font-weight:600;color:var(--green);letter-spacing:.22em;text-align:center}
-.rs-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.62rem;width:100%;max-width:380px}
-.rs-stat{background:var(--glass);border:1px solid var(--rim);border-radius:var(--r2);padding:.82rem;text-align:center}
-.rs-stat .rv{font-family:var(--fh);font-size:1.3rem;font-weight:800}
-.rs-stat .rk{font-size:.6rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:2px}
+/* ══════════ RESULT ══════════ */
+#sr{align-items:center;justify-content:flex-start;padding:calc(1.4rem + var(--sat)) 1.15rem calc(1.4rem + var(--sab));gap:.95rem;overflow-y:auto}
+.trophy{font-size:4rem;text-align:center;animation:popIn .48s var(--ease)}
+@keyframes popIn{0%{transform:scale(0) rotate(-20deg);opacity:0}70%{transform:scale(1.12) rotate(4deg)}100%{transform:scale(1);opacity:1}}
+.res-word{font-family:var(--fm);font-size:clamp(1.35rem,5vw,1.8rem);font-weight:600;color:#4ade80;letter-spacing:.2em;text-align:center}
+.rs-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;width:100%;max-width:380px}
+.rs-stat{background:var(--glass);border:1px solid var(--rim);border-radius:var(--r2);padding:.78rem;text-align:center}
+.rs-stat .rv{font-family:var(--fh);font-size:1.25rem;font-weight:800}
+.rs-stat .rk{font-size:.58rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:2px}
 .lb-wrap{width:100%;max-width:380px;background:var(--glass);border:1px solid var(--rim);border-radius:var(--r2);overflow:hidden}
-.lb-hd{background:rgba(0,0,0,.2);padding:.6rem 1.05rem;display:flex;justify-content:space-between;align-items:center}
-.lb-row2{display:flex;align-items:center;gap:7px;padding:.68rem 1.05rem;border-top:1px solid var(--rim);transition:background .13s}
+.lb-hd{background:rgba(0,0,0,.2);padding:.58rem 1rem;display:flex;justify-content:space-between;align-items:center}
+.lb-row2{display:flex;align-items:center;gap:7px;padding:.65rem 1rem;border-top:1px solid var(--rim);transition:background .12s}
 .lb-row2:hover{background:var(--gl2)}
-.lb-rank{font-weight:800;color:var(--muted);font-size:.78rem;width:22px}
-.lb-name{flex:1;font-weight:700;font-size:.83rem}
+.lb-rank{font-weight:800;color:var(--muted);font-size:.77rem;width:22px}
+.lb-name{flex:1;font-weight:700;font-size:.82rem}
 .lb-meta{text-align:right}
-.lb-time{font-family:var(--fm);font-size:.78rem;color:var(--gold)}
-.lb-letters{font-size:.64rem;color:var(--muted)}
-.res-btns{display:flex;flex-direction:column;gap:.62rem;width:100%;max-width:380px}
+.lb-time{font-family:var(--fm);font-size:.77rem;color:var(--gold)}
+.lb-letters{font-size:.63rem;color:var(--muted)}
+.res-btns{display:flex;flex-direction:column;gap:.6rem;width:100%;max-width:380px}
 .res-btns .btn{width:100%}
-.daily-reset-row{display:flex;align-items:center;justify-content:center;gap:.5rem}
-.daily-reset-btn{background:none;border:none;color:var(--muted);font-size:.7rem;cursor:pointer;text-decoration:underline;font-family:var(--fb);padding:2px 4px;transition:color .15s}
+.daily-reset-row{display:flex;align-items:center;justify-content:center;gap:.48rem}
+.daily-reset-btn{background:none;border:none;color:var(--muted);font-size:.69rem;cursor:pointer;text-decoration:underline;font-family:var(--fb);padding:2px 4px;touch-action:manipulation}
 .daily-reset-btn:hover{color:var(--soft)}
 
-/* ════════════════════════
-   CONFETTI
-════════════════════════ */
+/* ══════════ CONFETTI ══════════ */
 .cf-wrap{position:fixed;inset:0;pointer-events:none;z-index:999;overflow:hidden}
-.cp{position:absolute;top:-14px;animation:cpFall var(--d) linear var(--dl) forwards}
+.cp{position:absolute;top:-14px;animation:cpFall var(--d) linear var(--dl) forwards;will-change:transform}
 @keyframes cpFall{0%{transform:translate(0,0) rotate(0deg);opacity:1}100%{transform:translate(var(--dx),106vh) rotate(var(--rr));opacity:0}}
 
-/* ════════════════════════
-   RESPONSIVE
-════════════════════════ */
+/* ══════════ RESPONSIVE ══════════ */
+/* Small Android (360px) */
+@media(max-width:380px){
+  .age-grid{grid-template-columns:repeat(2,1fr)}
+  .wkey{font-size:.74rem}
+  .wkey.wide{font-size:.62rem}
+}
+/* Very small (320px) */
+@media(max-width:330px){
+  .wkey{font-size:.66rem}
+  .wkey.wide{font-size:.58rem;max-width:52px}
+}
+/* Tablet */
 @media(min-width:600px){
   .home-inner{max-width:400px}
-  .wkey{height:60px;font-size:.9rem}
+  .wkey{max-width:52px}
+  .wkey.wide{max-width:70px}
 }
 @media(min-width:768px){
   .home-inner{max-width:440px}
-  .wkey{height:64px;font-size:.95rem}
   .ss-in,.we-in{max-width:520px}
 }
-@media(max-width:375px){
-  .age-grid{grid-template-columns:repeat(2,1fr)}
-  .wkey{height:48px;font-size:.75rem}
-  .wkey.wide{min-width:48px}
-}
-@media(max-width:320px){
-  .wkey{font-size:.68rem}
-}
-@media(orientation:landscape) and (max-height:480px){
-  #sg{gap:.35rem}
+/* Landscape phone */
+@media(orientation:landscape) and (max-height:500px){
+  #sg{gap:3px;padding-top:max(3px,var(--sat));padding-bottom:max(3px,var(--sab))}
+  .game-header{padding:5px 10px}
+  .gh-title{font-size:.78rem}
   .grid{gap:3px}
   .grid-row{gap:3px}
-  .wkey{height:44px;font-size:.76rem}
-  .game-header{padding:.4rem .7rem}
-  .sw-disp{font-size:1rem}
+  .kb-wrap{gap:3px}
+  .kb-row2{gap:3px}
+  .game-sub{min-height:22px}
+  .hint-bar,.ai-bar{padding:4px 8px;font-size:.68rem}
 }
 ::-webkit-scrollbar{width:4px}
 ::-webkit-scrollbar-track{background:transparent}
@@ -366,23 +437,24 @@ body{font-family:var(--fb);background:var(--ink);color:var(--txt);min-height:100
 </style>
 </head>
 <body>
+
 <div class="aurora"><div class="ab ab1"></div><div class="ab ab2"></div><div class="ab ab3"></div></div>
 <div class="mesh"></div>
 <div class="cf-wrap" id="cfwrap"></div>
 <div class="toast" id="toast"></div>
-<div class="countdown-ov" id="cdov" style="display:none">
+<div class="cd-ov" id="cdov" style="display:none">
   <div class="cd-num" id="cdnum">3</div>
   <div class="cd-lbl" id="cd-lbl">Get ready...</div>
 </div>
 
-<!-- ══ LOADING ══ -->
-<div id="screen-loading">
+<!-- LOADING -->
+<div id="sl">
   <div class="load-logo">WordQuest</div>
   <div class="load-ring"></div>
   <div class="load-sub">Letter by letter · Mind by mind</div>
 </div>
 
-<!-- ══ HOME ══ -->
+<!-- HOME -->
 <div class="screen" id="sh">
   <div class="home-inner fade-up">
     <div class="wordmark-wrap">
@@ -398,41 +470,39 @@ body{font-family:var(--fb);background:var(--ink);color:var(--txt);min-height:100
     <div class="mode-cards">
       <div class="mode-card mc-h2h" onclick="quickPlay('h2h')">
         <div class="mc-icon">⚔️</div>
-        <div class="mc-text"><div class="mc-title">Head-to-Head</div><div class="mc-desc">One sets the word. One guesses. Race the clock.</div></div>
+        <div class="mc-text"><div class="mc-title">Head-to-Head</div><div class="mc-desc">Set a real English word. Guesser has 5 tries.</div></div>
         <div class="mc-arrow">›</div>
       </div>
       <div class="mode-card mc-daily" onclick="quickPlay('daily')">
         <div class="mc-icon">📅</div>
-        <div class="mc-text"><div class="mc-title">Daily Word</div><div class="mc-desc">Same word for everyone today. Race to solve it.</div></div>
+        <div class="mc-text"><div class="mc-title">Daily Word</div><div class="mc-desc">Same word worldwide today. Race to crack it.</div></div>
         <div class="mc-arrow">›</div>
       </div>
       <div class="mode-card mc-chill" onclick="quickPlay('chill')">
         <div class="mc-icon">🌙</div>
-        <div class="mc-text"><div class="mc-title">Chill Mode</div><div class="mc-desc">No timer. Learn together at your own pace.</div></div>
+        <div class="mc-text"><div class="mc-title">Chill Mode</div><div class="mc-desc">No timer. Set a word and learn together.</div></div>
         <div class="mc-arrow">›</div>
       </div>
     </div>
     <div class="home-footer">
-      <button class="btn bgh btn-sm" onclick="showLb()">🏆 Leaderboard</button>
-      <button class="btn bgh btn-sm" onclick="goSetup()">⚙️ Settings</button>
+      <button class="btn bgh btn-sm" onclick="showLb()" type="button">🏆 Leaderboard</button>
+      <button class="btn bgh btn-sm" onclick="goSetup()" type="button">⚙️ Settings</button>
     </div>
   </div>
 </div>
 
-<!-- ══ SETTINGS ══ -->
+<!-- SETTINGS -->
 <div class="screen" id="ss">
-  <div class="ss-in" style="margin:0 auto;padding:calc(1.4rem + var(--sat)) 1.2rem calc(1.4rem + var(--sab))">
-    <button class="btn bgh btn-sm" style="width:fit-content" onclick="goHome()">← Back</button>
-    <div><h2 class="h-lg">Settings</h2><p style="font-size:.84rem;margin-top:.28rem;color:var(--muted)">Adjust age level, names and options.</p></div>
-
+  <div class="ss-in" style="margin:0 auto;padding:calc(1.3rem + var(--sat)) 1.15rem calc(1.3rem + var(--sab))">
+    <button class="btn bgh btn-sm" style="width:fit-content" onclick="goHome()" type="button">← Back</button>
+    <div><h2 class="h-lg">Settings</h2><p style="font-size:.82rem;margin-top:.26rem;color:var(--muted)">Adjust age level, names &amp; options.</p></div>
     <div class="card">
       <div class="eyebrow">Players</div>
       <div class="names-row">
-        <div class="fl"><label>Word Setter</label><input class="fi" id="n1" placeholder="Parent / Teacher" maxlength="16"></div>
-        <div class="fl"><label>Guesser</label><input class="fi" id="n2" placeholder="Child / Student" maxlength="16"></div>
+        <div class="fl"><label>Word Setter</label><input class="fi" id="n1" placeholder="Parent / Teacher" maxlength="16" autocomplete="given-name"></div>
+        <div class="fl"><label>Guesser</label><input class="fi" id="n2" placeholder="Child / Student" maxlength="16" autocomplete="off"></div>
       </div>
     </div>
-
     <div class="card">
       <div class="eyebrow">Age &amp; difficulty</div>
       <div class="age-grid" id="agrid">
@@ -444,11 +514,10 @@ body{font-family:var(--fb);background:var(--ink);color:var(--txt);min-height:100
         <div class="age-btn" data-age="custom"   onclick="pickAge(this)"><span class="age-ico">⚙️</span><span class="age-lbl">Custom</span><span class="age-rng">Any word</span></div>
       </div>
     </div>
-
-    <div class="card" style="display:flex;flex-direction:column;gap:.48rem">
+    <div class="card" style="display:flex;flex-direction:column;gap:.46rem">
       <div class="eyebrow">Options</div>
       <div class="tgl-row" id="tgl-hint" onclick="toggleOpt('hint')">
-        <div class="tgl-info"><div class="ti">💡 First-letter hint</div><div class="ts">Reveal the starting letter at game start</div></div>
+        <div class="tgl-info"><div class="ti">💡 First-letter hint</div><div class="ts">Reveal the starting letter</div></div>
         <div class="tgl-track"><div class="tgl-thumb"></div></div>
       </div>
       <div class="tgl-row" id="tgl-ai" onclick="toggleOpt('ai')">
@@ -456,225 +525,237 @@ body{font-family:var(--fb);background:var(--ink);color:var(--txt);min-height:100
         <div class="tgl-track"><div class="tgl-thumb"></div></div>
       </div>
       <div class="tgl-row on" id="tgl-sound" onclick="toggleOpt('sound')">
-        <div class="tgl-info"><div class="ti">🔊 Sound effects</div><div class="ts">Tones for hits, misses and wins</div></div>
+        <div class="tgl-info"><div class="ti">🔊 Sound effects</div><div class="ts">Tones for hits, misses &amp; wins</div></div>
         <div class="tgl-track"><div class="tgl-thumb"></div></div>
       </div>
     </div>
-
-    <button class="btn bv btn-lg" onclick="saveSettings()">Save Settings</button>
+    <button class="btn bv btn-lg" onclick="saveSettings()" type="button">Save Settings</button>
   </div>
 </div>
 
-<!-- ══ WORD ENTRY (H2H only) ══ -->
+<!-- WORD ENTRY -->
 <div class="screen" id="swe">
-  <div class="we-in" style="margin:0 auto;padding:calc(1.4rem + var(--sat)) 1.2rem calc(1.4rem + var(--sab))">
-    <button class="btn bgh btn-sm" style="width:fit-content" onclick="goHome()">← Home</button>
-    <div><h2 class="h-lg" id="we-title">Your secret word</h2><p style="font-size:.82rem;margin-top:.28rem;color:var(--muted)" id="we-sub">Type below.</p></div>
-
+  <div class="we-in" style="margin:0 auto;padding:calc(1.3rem + var(--sat)) 1.15rem calc(1.3rem + var(--sab))">
+    <button class="btn bgh btn-sm" style="width:fit-content" onclick="goHome()" type="button">← Home</button>
+    <div><h2 class="h-lg" id="we-title">Your secret word</h2><p style="font-size:.8rem;margin-top:.26rem;color:var(--muted)" id="we-sub">Must be a real English word.</p></div>
     <div class="priv-strip">🙈 Guesser — look away while the word is typed!</div>
-
-    <div class="card" style="display:flex;flex-direction:column;gap:.65rem">
-      <div class="eyebrow">Secret word <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0;font-size:.72rem">(single word, letters only)</span></div>
+    <div class="card" style="display:flex;flex-direction:column;gap:.62rem">
+      <div class="eyebrow">Secret word <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0;font-size:.7rem">— verified against dictionary</span></div>
       <div class="sw-wrap">
-        <input class="si" id="si" type="text" placeholder="TYPE YOUR WORD" maxlength="16" oninput="validateW()" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false">
-        <button class="eye-btn" onclick="toggleShow()">👁</button>
+        <input class="si" id="si" type="text" placeholder="TYPE YOUR WORD" maxlength="16"
+          oninput="onWordInput()" autocomplete="off" autocorrect="off"
+          autocapitalize="characters" spellcheck="false" inputmode="text">
+        <button class="eye-btn" onclick="toggleShow()" type="button">👁</button>
       </div>
       <div class="err" id="werr"></div>
-      <div class="eyebrow" style="margin-top:.15rem">Category <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></div>
+      <div class="checking-msg" id="wcheck">🔍 Checking dictionary...</div>
+      <div class="eyebrow" style="margin-top:.18rem">Category <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></div>
       <div class="cat-wrap" id="cat-chips"></div>
     </div>
-
     <div class="card" id="sug-card">
-      <div class="eyebrow">Need inspiration?</div>
+      <div class="eyebrow">Need inspiration? <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0;font-size:.7rem">All suggestions are verified real words</span></div>
       <div class="sug-wrap" id="sug-list"></div>
     </div>
-
-    <button class="btn bc btn-lg" onclick="startGame()" id="start-btn">🚀 <span id="start-lbl">Start!</span></button>
+    <button class="btn bc btn-lg" id="start-btn" onclick="startGame()" type="button">🚀 <span id="start-lbl">Start!</span></button>
   </div>
 </div>
 
-<!-- ══ WORDLE GAME ══ -->
+<!-- GAME -->
 <div class="screen" id="sg">
-
   <div class="game-header">
     <div class="gh-left">
-      <div>
-        <div class="gh-title" id="gh-title">WordQuest</div>
-        <div class="gh-mode" id="gh-mode">Daily Word</div>
-      </div>
+      <div><div class="gh-title" id="gh-title">WordQuest</div><div class="gh-mode" id="gh-mode">Daily Word</div></div>
     </div>
     <div class="sw-disp" id="sw">0:00</div>
-    <div style="display:flex;gap:.4rem">
-      <button class="btn bgh btn-sm" id="ai-btn" onclick="getAiHint()" style="display:none">✨</button>
-      <button class="btn bgh btn-sm" onclick="giveUp()">🏳</button>
+    <div class="gh-btns">
+      <button class="btn bgh btn-sm" id="ai-btn" onclick="getAiHint()" style="display:none" type="button">✨</button>
+      <button class="btn bgh btn-sm" onclick="giveUp()" type="button">🏳</button>
     </div>
   </div>
 
   <div class="hint-bar" id="hint-bar">💡 <span id="hint-txt"></span></div>
-  <div class="ai-bar" id="ai-bar"><span class="ai-ico">✨</span><div><div style="font-size:.65rem;font-weight:700;color:var(--v);letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px">AI Hint</div><div id="ai-txt"></div></div></div>
-
-  <!-- Wordle grid -->
-  <div class="grid-wrap">
-    <div class="grid" id="wgrid"></div>
+  <div class="ai-bar" id="ai-bar">
+    <span class="ai-ico">✨</span>
+    <div><div style="font-size:.63rem;font-weight:700;color:var(--v);letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px">AI Hint</div><div id="ai-txt"></div></div>
   </div>
 
-  <!-- Wordle keyboard -->
+  <div class="grid-wrap"><div class="grid" id="wgrid"></div></div>
+
+  <div class="game-sub">
+    <div class="cat-tag" id="cat-tag"><span id="cat-ico">🔤</span><span id="cat-lbl">Category</span></div>
+    <button class="btn bgold btn-sm" id="rand-btn" onclick="newRandomWord()" type="button">🎲 New Word</button>
+  </div>
+
   <div class="kb-wrap" id="wkb"></div>
-
-  <!-- sub row: category badge + random word (daily only) -->
-  <div class="game-sub-row" id="game-sub-row">
-    <div id="cat-tag" style="display:none;align-items:center;gap:5px;background:rgba(0,217,196,.09);border:1px solid rgba(0,217,196,.2);border-radius:8px;padding:.4rem .75rem;font-size:.67rem;font-weight:700;color:var(--cyan)"><span id="cat-ico">🔤</span><span id="cat-lbl">Category</span></div>
-    <button class="btn bgold btn-sm" id="rand-word-btn" onclick="getRandomWord()" style="display:none">🎲 New Word</button>
-  </div>
-
 </div>
 
-<!-- ══ RESULT ══ -->
+<!-- RESULT -->
 <div class="screen" id="sr">
-  <div style="width:100%;max-width:380px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:1rem;padding:calc(1.5rem + var(--sat)) 1.2rem calc(1.5rem + var(--sab))">
+  <div style="width:100%;max-width:380px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:.92rem;padding:calc(1.4rem + var(--sat)) 1.15rem calc(1.4rem + var(--sab))">
     <div class="trophy" id="trophy">🏆</div>
     <div style="text-align:center">
       <h2 class="h-lg" id="res-title">Word Cracked!</h2>
-      <p style="margin-top:.22rem;font-size:.86rem;color:var(--muted)" id="res-sub"></p>
+      <p style="margin-top:.2rem;font-size:.84rem;color:var(--muted)" id="res-sub"></p>
     </div>
     <div class="res-word" id="res-word"></div>
     <div class="rs-stats">
       <div class="rs-stat"><div class="rv" id="rs-time" style="color:var(--gold)">—</div><div class="rk">Time</div></div>
       <div class="rs-stat"><div class="rv" id="rs-guesses" style="color:var(--v)">—</div><div class="rk">Guesses</div></div>
-      <div class="rs-stat"><div class="rv" id="rs-score" style="color:var(--green)">—</div><div class="rk">Score</div></div>
+      <div class="rs-stat"><div class="rv" id="rs-score" style="color:#4ade80">—</div><div class="rk">Score</div></div>
     </div>
     <div class="lb-wrap">
       <div class="lb-hd"><span class="label-sm" style="color:var(--gold)">🏆 Leaderboard</span><span class="label-sm">guesses</span></div>
       <div id="lb-body"></div>
     </div>
     <div id="daily-reset-wrap" style="display:none" class="daily-reset-row">
-      <span style="font-size:.7rem;color:var(--muted)">Want to play again today?</span>
-      <button class="daily-reset-btn" onclick="resetDailyWord()">Reset daily word</button>
+      <span style="font-size:.69rem;color:var(--muted)">Want to replay today's word?</span>
+      <button class="daily-reset-btn" onclick="resetDailyWord()" type="button">Reset daily</button>
     </div>
     <div class="res-btns">
-      <button class="btn bv" onclick="goHome()">🏠 Home</button>
-      <button class="btn bgh" onclick="switchRoles()">🔃 Switch roles</button>
+      <button class="btn bv" onclick="goHome()" type="button">🏠 Home</button>
+      <button class="btn bgh" onclick="switchRoles()" type="button">🔃 Switch roles</button>
     </div>
   </div>
 </div>
 
 <script>
-/* ═══════════════════════════════
-   WORD BANKS — single words only
-═══════════════════════════════ */
+/* ══════════════════════════════════
+   WORD BANKS
+══════════════════════════════════ */
 const BANK={
-  tiny:[{w:'CAT',c:'Animals'},{w:'DOG',c:'Animals'},{w:'SUN',c:'Nature'},{w:'HAT',c:'Clothes'},{w:'BUS',c:'Transport'},{w:'CUP',c:'Home'},{w:'RED',c:'Colours'},{w:'BEE',c:'Animals'},{w:'FLY',c:'Actions'},{w:'EGG',c:'Food'},{w:'FOX',c:'Animals'},{w:'JAM',c:'Food'},{w:'PIG',c:'Animals'},{w:'OWL',c:'Animals'},{w:'ICE',c:'Nature'},{w:'MAP',c:'School'},{w:'BOX',c:'Home'},{w:'HOP',c:'Actions'},{w:'ANT',c:'Animals'},{w:'WEB',c:'Nature'},{w:'COW',c:'Animals'},{w:'HEN',c:'Animals'},{w:'BED',c:'Home'},{w:'CAP',c:'Clothes'},{w:'NET',c:'Sports'},{w:'ZOO',c:'Animals'},{w:'ARM',c:'Body'},{w:'EAR',c:'Body'},{w:'TOE',c:'Body'},{w:'LOG',c:'Nature'}],
-  junior:[{w:'CLOUD',c:'Nature'},{w:'TIGER',c:'Animals'},{w:'MAGIC',c:'Fantasy'},{w:'BREAD',c:'Food'},{w:'OCEAN',c:'Nature'},{w:'PIANO',c:'Music'},{w:'BRAVE',c:'Words'},{w:'DREAM',c:'Mind'},{w:'GHOST',c:'Fantasy'},{w:'JUICE',c:'Food'},{w:'HAPPY',c:'Feelings'},{w:'LIGHT',c:'Science'},{w:'PLANT',c:'Nature'},{w:'QUEEN',c:'Royalty'},{w:'RIVER',c:'Nature'},{w:'SNAKE',c:'Animals'},{w:'TOWER',c:'Buildings'},{w:'UNCLE',c:'Family'},{w:'SMILE',c:'Feelings'},{w:'SWORD',c:'Fantasy'},{w:'FLAME',c:'Nature'},{w:'STONE',c:'Nature'},{w:'WITCH',c:'Fantasy'},{w:'GLOBE',c:'Geography'},{w:'CRANE',c:'Animals'},{w:'FROST',c:'Weather'},{w:'SCOUT',c:'People'},{w:'FLUTE',c:'Music'},{w:'SHARK',c:'Animals'},{w:'STORM',c:'Weather'}],
-  explorer:[{w:'BALLOON',c:'Fun'},{w:'CAPTAIN',c:'Adventure'},{w:'DIAMOND',c:'Gems'},{w:'ECLIPSE',c:'Space'},{w:'FREEDOM',c:'Values'},{w:'GRAVITY',c:'Science'},{w:'HORIZON',c:'Nature'},{w:'JOURNEY',c:'Adventure'},{w:'LANTERN',c:'Objects'},{w:'MYSTERY',c:'Concepts'},{w:'PENGUIN',c:'Animals'},{w:'PYRAMID',c:'History'},{w:'SILENCE',c:'Concepts'},{w:'THUNDER',c:'Weather'},{w:'UNICORN',c:'Fantasy'},{w:'VOLCANO',c:'Nature'},{w:'WARRIOR',c:'People'},{w:'CRYSTAL',c:'Gems'},{w:'DOLPHIN',c:'Animals'},{w:'COMPASS',c:'Adventure'},{w:'GLACIER',c:'Nature'},{w:'PHANTOM',c:'Fantasy'},{w:'TERRAIN',c:'Geography'},{w:'CHIMNEY',c:'Buildings'},{w:'BLOSSOM',c:'Nature'},{w:'EMPEROR',c:'History'},{w:'LIBRARY',c:'School'},{w:'FURNACE',c:'Objects'},{w:'SPARROW',c:'Animals'},{w:'LANTERN',c:'Objects'}],
+  tiny:[{w:'CAT',c:'Animals'},{w:'DOG',c:'Animals'},{w:'SUN',c:'Nature'},{w:'HAT',c:'Clothes'},{w:'BUS',c:'Transport'},{w:'CUP',c:'Home'},{w:'RED',c:'Colours'},{w:'BEE',c:'Animals'},{w:'EGG',c:'Food'},{w:'FOX',c:'Animals'},{w:'JAM',c:'Food'},{w:'PIG',c:'Animals'},{w:'OWL',c:'Animals'},{w:'ICE',c:'Nature'},{w:'MAP',c:'School'},{w:'BOX',c:'Home'},{w:'HOP',c:'Actions'},{w:'ANT',c:'Animals'},{w:'WEB',c:'Nature'},{w:'COW',c:'Animals'},{w:'HEN',c:'Animals'},{w:'BED',c:'Home'},{w:'CAP',c:'Clothes'},{w:'NET',c:'Sports'},{w:'ZOO',c:'Animals'},{w:'ARM',c:'Body'},{w:'EAR',c:'Body'},{w:'TOE',c:'Body'},{w:'LOG',c:'Nature'},{w:'POT',c:'Home'}],
+  junior:[{w:'CLOUD',c:'Nature'},{w:'TIGER',c:'Animals'},{w:'MAGIC',c:'Fantasy'},{w:'BREAD',c:'Food'},{w:'OCEAN',c:'Nature'},{w:'PIANO',c:'Music'},{w:'BRAVE',c:'Words'},{w:'DREAM',c:'Mind'},{w:'GHOST',c:'Fantasy'},{w:'JUICE',c:'Food'},{w:'HAPPY',c:'Feelings'},{w:'LIGHT',c:'Science'},{w:'PLANT',c:'Nature'},{w:'QUEEN',c:'Royalty'},{w:'RIVER',c:'Nature'},{w:'SNAKE',c:'Animals'},{w:'TOWER',c:'Buildings'},{w:'SMILE',c:'Feelings'},{w:'SWORD',c:'Fantasy'},{w:'FLAME',c:'Nature'},{w:'STONE',c:'Nature'},{w:'WITCH',c:'Fantasy'},{w:'GLOBE',c:'Geography'},{w:'FROST',c:'Weather'},{w:'SCOUT',c:'People'},{w:'FLUTE',c:'Music'},{w:'SHARK',c:'Animals'},{w:'STORM',c:'Weather'},{w:'MAPLE',c:'Nature'},{w:'CRISP',c:'Food'}],
+  explorer:[{w:'BALLOON',c:'Fun'},{w:'CAPTAIN',c:'Adventure'},{w:'DIAMOND',c:'Gems'},{w:'ECLIPSE',c:'Space'},{w:'FREEDOM',c:'Values'},{w:'GRAVITY',c:'Science'},{w:'HORIZON',c:'Nature'},{w:'JOURNEY',c:'Adventure'},{w:'LANTERN',c:'Objects'},{w:'MYSTERY',c:'Concepts'},{w:'PENGUIN',c:'Animals'},{w:'PYRAMID',c:'History'},{w:'SILENCE',c:'Concepts'},{w:'THUNDER',c:'Weather'},{w:'UNICORN',c:'Fantasy'},{w:'VOLCANO',c:'Nature'},{w:'WARRIOR',c:'People'},{w:'CRYSTAL',c:'Gems'},{w:'DOLPHIN',c:'Animals'},{w:'COMPASS',c:'Adventure'},{w:'GLACIER',c:'Nature'},{w:'PHANTOM',c:'Fantasy'},{w:'TERRAIN',c:'Geography'},{w:'CHIMNEY',c:'Buildings'},{w:'BLOSSOM',c:'Nature'},{w:'EMPEROR',c:'History'},{w:'LIBRARY',c:'School'},{w:'FURNACE',c:'Objects'},{w:'SPARROW',c:'Animals'},{w:'CHAPTER',c:'School'}],
   scholar:[{w:'ABSTRACT',c:'Art'},{w:'BOUNDARY',c:'Concepts'},{w:'ELOQUENT',c:'Language'},{w:'FRACTION',c:'Maths'},{w:'GENERATE',c:'Science'},{w:'HERITAGE',c:'Culture'},{w:'INFINITE',c:'Maths'},{w:'LABYRINTH',c:'Fantasy'},{w:'MOMENTUM',c:'Science'},{w:'NITROGEN',c:'Science'},{w:'OBSTACLE',c:'Concepts'},{w:'PARALLEL',c:'Maths'},{w:'SYMMETRY',c:'Maths'},{w:'TROPICAL',c:'Geography'},{w:'UNIVERSE',c:'Space'},{w:'JEALOUSY',c:'Feelings'},{w:'SCAFFOLD',c:'Buildings'},{w:'MEDIEVAL',c:'History'},{w:'EPIDEMIC',c:'Science'},{w:'DIAMETER',c:'Maths'},{w:'THRESHOLD',c:'Concepts'},{w:'FREQUENCY',c:'Science'},{w:'PENINSULA',c:'Geography'},{w:'EVOLUTION',c:'Science'},{w:'DEMOCRACY',c:'History'},{w:'ORCHESTRA',c:'Music'},{w:'STRUCTURE',c:'Concepts'},{w:'ABUNDANCE',c:'Words'},{w:'CATHEDRAL',c:'Buildings'},{w:'PERIMETER',c:'Maths'}],
-  master:[{w:'ALGORITHM',c:'Computing'},{w:'BYZANTINE',c:'History'},{w:'CHRYSALIS',c:'Nature'},{w:'DYSTOPIAN',c:'Literature'},{w:'EPHEMERAL',c:'Philosophy'},{w:'FORMIDABLE',c:'Words'},{w:'HYPERBOLE',c:'Language'},{w:'INDIGENOUS',c:'Culture'},{w:'JUXTAPOSE',c:'Language'},{w:'KALEIDOSCOPE',c:'Art'},{w:'MELANCHOLY',c:'Feelings'},{w:'NARCISSISM',c:'Psychology'},{w:'OSCILLATE',c:'Science'},{w:'PERSEVERE',c:'Values'},{w:'RENAISSANCE',c:'History'},{w:'TENACIOUS',c:'Values'},{w:'PHILOSOPHICAL',c:'Concepts'},{w:'CATASTROPHIC',c:'Words'},{w:'SERENDIPITY',c:'Concepts'},{w:'MAGNANIMOUS',c:'Values'},{w:'INCANDESCENT',c:'Science'},{w:'CLANDESTINE',c:'Words'},{w:'EQUIVOCATE',c:'Language'},{w:'SYCOPHANT',c:'Psychology'},{w:'OBFUSCATE',c:'Language'},{w:'LOQUACIOUS',c:'Language'},{w:'UBIQUITOUS',c:'Words'},{w:'PERSPICACIOUS',c:'Words'},{w:'PERFIDIOUS',c:'Words'},{w:'LABYRINTHINE',c:'Words'}],
+  master:[{w:'ALGORITHM',c:'Computing'},{w:'BYZANTINE',c:'History'},{w:'CHRYSALIS',c:'Nature'},{w:'DYSTOPIAN',c:'Literature'},{w:'EPHEMERAL',c:'Philosophy'},{w:'FORMIDABLE',c:'Words'},{w:'HYPERBOLE',c:'Language'},{w:'INDIGENOUS',c:'Culture'},{w:'JUXTAPOSE',c:'Language'},{w:'MELANCHOLY',c:'Feelings'},{w:'NARCISSISM',c:'Psychology'},{w:'OSCILLATE',c:'Science'},{w:'PERSEVERE',c:'Values'},{w:'RENAISSANCE',c:'History'},{w:'TENACIOUS',c:'Values'},{w:'SERENDIPITY',c:'Concepts'},{w:'MAGNANIMOUS',c:'Values'},{w:'CLANDESTINE',c:'Words'},{w:'EQUIVOCATE',c:'Language'},{w:'SYCOPHANT',c:'Psychology'},{w:'OBFUSCATE',c:'Language'},{w:'LOQUACIOUS',c:'Language'},{w:'UBIQUITOUS',c:'Words'},{w:'PERFIDIOUS',c:'Words'},{w:'CATASTROPHE',c:'Words'},{w:'PHILOSOPHICAL',c:'Concepts'},{w:'INCANDESCENT',c:'Science'},{w:'KALEIDOSCOPE',c:'Art'},{w:'LABYRINTHINE',c:'Words'},{w:'PERSPICACIOUS',c:'Words'}],
   custom:[]
 };
 const CICO={Animals:'🐾',Nature:'🌿',Food:'🍎',Clothes:'👕',Transport:'🚌',Home:'🏠',Colours:'🎨',Words:'✨',Actions:'⚡',School:'📚',Fantasy:'🧙',Music:'🎵',Feelings:'💭',Science:'🔬',Royalty:'👑',Adventure:'🗺️',Gems:'💎',Space:'🚀',Geography:'🌍',History:'🏛️',Culture:'🎭',Art:'🖼️',Maths:'📐',Buildings:'🏰',Weather:'⛈️',People:'👥',Family:'👪',Computing:'💻',Language:'📖',Philosophy:'🤔',Literature:'📰',Psychology:'🧠',Values:'⭐',Concepts:'💡',Mind:'🌙',Fun:'🎉',Objects:'🔦',Sports:'🏅',Body:'🫀',default:'🔤'};
 const CATS=['Animals','Nature','Food','Sports','Fantasy','Science','History','Geography','Music','Feelings','Art'];
 
-/* ═══════════════════════════════
-   WORDLE GAME STATE
-═══════════════════════════════ */
-// Max guesses = 5 (as per Wordle image)
+/* ══════════════════════════════════
+   DICTIONARY VALIDATION
+   Uses the free dictionaryapi.dev API.
+   - Caches results so we never double-fetch.
+   - Falls back to "allow" if the API is unreachable (offline / timeout).
+   - Words from our built-in bank are always pre-approved.
+══════════════════════════════════ */
+const dictCache = new Map();
+
+async function isRealWord(word) {
+  const w = word.toLowerCase().trim();
+  if (dictCache.has(w)) return dictCache.get(w);
+  try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 6000); // 6s timeout
+    const r = await fetch(
+      `https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(w)}`,
+      { signal: controller.signal }
+    );
+    clearTimeout(timer);
+    const ok = r.status === 200; // 200 = valid word; 404 = not found
+    dictCache.set(w, ok);
+    return ok;
+  } catch (e) {
+    // Offline or timeout → give benefit of the doubt
+    console.warn('Dictionary API unreachable — allowing word:', w);
+    dictCache.set(w, true);
+    return true;
+  }
+}
+
+// Pre-warm cache with all bank words so we never need to look them up
+(function preWarmCache() {
+  Object.values(BANK).flat().forEach(({w}) => {
+    if (!w.includes(' ')) dictCache.set(w.toLowerCase(), true);
+  });
+})();
+
+/* ══════════════════════════════════
+   CONSTANTS & STATE
+══════════════════════════════════ */
 const MAX_GUESSES = 5;
 
-// G = global game state
-const G={
-  p1:'Player 1',p2:'Player 2',
-  age:'junior',mode:'daily',
-  hint:false,ai:false,sound:true,
-  word:'',       // current secret word (uppercase)
-  wordLen:0,
-  category:'',
-  // Wordle state
-  guesses:[],    // array of submitted guess strings
-  current:'',    // letters typed so far in current row
-  gameOver:false,
-  // Timer
-  swMs:0,swRunning:false,swInt:null,
+const G = {
+  p1:'Player 1', p2:'Player 2',
+  age:'junior', mode:'daily',
+  hint:false, ai:false, sound:true,
+  word:'', wordLen:0, category:'',
+  guesses:[], current:'', gameOver:false,
+  swMs:0, swRunning:false, swInt:null,
   aiUsed:false,
-  // Persistence
-  totalGames:0,totalWords:0,bestMs:Infinity,
-  lb:[]
+  totalGames:0, totalWords:0, bestMs:Infinity, lb:[]
 };
 
-/* ═══════════════════════════════
-   DAILY WORD
-═══════════════════════════════ */
+/* ══════════════════════════════════
+   DAILY WORD — deterministic by date
+══════════════════════════════════ */
 function getDailyKey(){
-  const d=new Date(),y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),dd=String(d.getDate()).padStart(2,'0');
-  return `${y}${m}${dd}`;
+  const d=new Date();
+  return `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
 }
 function getDailyWord(age){
-  const bank=BANK[age]||BANK.junior;
-  // Only single-word entries (no spaces)
-  const singles=bank.filter(e=>!e.w.includes(' '));
+  const bank=(BANK[age]||BANK.junior).filter(e=>!e.w.includes(' '));
   const key=getDailyKey();
-  let hash=0;
-  for(let i=0;i<key.length;i++) hash=(hash*31+key.charCodeAt(i))>>>0;
-  return singles[hash%singles.length];
+  let h=0; for(let i=0;i<key.length;i++) h=(h*31+key.charCodeAt(i))>>>0;
+  return bank[h%bank.length];
 }
-function getRandomWord(age){
-  age=age||G.age;
-  const bank=BANK[age]||BANK.junior;
-  const singles=bank.filter(e=>!e.w.includes(' '));
-  return singles[Math.floor(Math.random()*singles.length)];
+function randWord(age){
+  const bank=(BANK[age||G.age]||BANK.junior).filter(e=>!e.w.includes(' '));
+  return bank[Math.floor(Math.random()*bank.length)];
 }
 function resetDailyWord(){
-  if(!confirm('Reset today\'s daily word so you can play again?'))return;
+  if(!confirm('Reset today\'s daily word so you can play it again?'))return;
   localStorage.removeItem('wq_daily_'+getDailyKey());
-  showToast('Daily word reset! Tap Daily Word to play again.');
+  showToast('Daily word reset!');
 }
 
-/* ═══════════════════════════════
+/* ══════════════════════════════════
    AUDIO
-═══════════════════════════════ */
+══════════════════════════════════ */
 let actx=null;
 function getACtx(){if(!actx)actx=new(window.AudioContext||window.webkitAudioContext)();return actx}
 function tone(f,dur,type,vol,delay){
   if(!G.sound)return;
-  try{const a=getACtx(),o=a.createOscillator(),g=a.createGain();o.connect(g);g.connect(a.destination);o.type=type||'sine';o.frequency.setValueAtTime(f,a.currentTime+(delay||0));g.gain.setValueAtTime(0,a.currentTime+(delay||0));g.gain.linearRampToValueAtTime(vol||0.18,a.currentTime+(delay||0)+0.01);g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+(delay||0)+dur);o.start(a.currentTime+(delay||0));o.stop(a.currentTime+(delay||0)+dur+0.02)}catch(e){}
+  try{const a=getACtx(),o=a.createOscillator(),g=a.createGain();
+    o.connect(g);g.connect(a.destination);o.type=type||'sine';
+    const t=a.currentTime+(delay||0);
+    o.frequency.setValueAtTime(f,t);
+    g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol||.18,t+.01);g.gain.exponentialRampToValueAtTime(.001,t+dur);
+    o.start(t);o.stop(t+dur+.02);
+  }catch(e){}
 }
 function sndKey(){tone(440,.06,'sine',.1)}
 function sndDel(){tone(300,.05,'sine',.08)}
-function sndWrong(){tone(220,.12,'sawtooth',.09)}
-function sndWin(){[523,659,784,1047].forEach((f,i)=>tone(f,.2,undefined,.15,i*.12));setTimeout(()=>[784,1047,1319,1568].forEach((f,i)=>tone(f,.22,undefined,.15,i*.1)),600)}
-function sndLose(){tone(200,.3,'sawtooth',.12)}
+function sndBad(){tone(220,.12,'sawtooth',.09)}
+function sndWin(){[523,659,784,1047].forEach((f,i)=>tone(f,.2,undefined,.15,i*.11));setTimeout(()=>[784,1047,1319,1568].forEach((f,i)=>tone(f,.22,undefined,.15,i*.09)),560)}
+function sndLose(){tone(200,.28,'sawtooth',.11)}
 function sndCD(){tone(440,.09)}
-function sndGo(){tone(880,.22);tone(1100,.28,undefined,undefined,.14)}
+function sndGo(){tone(880,.2);tone(1100,.26,undefined,undefined,.13)}
 
-/* ═══════════════════════════════
+/* ══════════════════════════════════
    PERSIST
-═══════════════════════════════ */
+══════════════════════════════════ */
 function save(){
-  localStorage.setItem('wq_games',G.totalGames);
-  localStorage.setItem('wq_words',G.totalWords);
-  localStorage.setItem('wq_best',G.bestMs===Infinity?'':G.bestMs);
-  localStorage.setItem('wq_lb',JSON.stringify(G.lb));
-  localStorage.setItem('wq_age',G.age);
-  localStorage.setItem('wq_sound',G.sound?'1':'0');
-  localStorage.setItem('wq_hint',G.hint?'1':'0');
-  localStorage.setItem('wq_ai',G.ai?'1':'0');
-  localStorage.setItem('wq_p1',G.p1);
-  localStorage.setItem('wq_p2',G.p2);
+  const d={games:G.totalGames,words:G.totalWords,best:G.bestMs===Infinity?'':G.bestMs,lb:JSON.stringify(G.lb),age:G.age,sound:G.sound?1:0,hint:G.hint?1:0,ai:G.ai?1:0,p1:G.p1,p2:G.p2};
+  for(const[k,v]of Object.entries(d))try{localStorage.setItem('wq_'+k,v)}catch(e){}
 }
 function load(){
-  G.totalGames=parseInt(localStorage.getItem('wq_games')||0);
-  G.totalWords=parseInt(localStorage.getItem('wq_words')||0);
-  const b=localStorage.getItem('wq_best');G.bestMs=b?parseInt(b):Infinity;
-  try{G.lb=JSON.parse(localStorage.getItem('wq_lb')||'[]')}catch(e){G.lb=[]}
-  G.age=localStorage.getItem('wq_age')||'junior';
-  G.sound=(localStorage.getItem('wq_sound')||'1')==='1';
-  G.hint=(localStorage.getItem('wq_hint')||'0')==='1';
-  G.ai=(localStorage.getItem('wq_ai')||'0')==='1';
-  G.p1=localStorage.getItem('wq_p1')||'Player 1';
-  G.p2=localStorage.getItem('wq_p2')||'Player 2';
+  const gi=n=>parseInt(localStorage.getItem('wq_'+n)||0);
+  const gs=n=>localStorage.getItem('wq_'+n);
+  G.totalGames=gi('games');G.totalWords=gi('words');
+  const b=gs('best');G.bestMs=b?parseInt(b):Infinity;
+  try{G.lb=JSON.parse(gs('lb')||'[]')}catch(e){G.lb=[]}
+  G.age=gs('age')||'junior';
+  G.sound=(gs('sound')||'1')==='1';
+  G.hint=(gs('hint')||'0')==='1';
+  G.ai=(gs('ai')||'0')==='1';
+  G.p1=gs('p1')||'Player 1';G.p2=gs('p2')||'Player 2';
 }
 
-/* ═══════════════════════════════
-   SCREENS
-═══════════════════════════════ */
+/* ══════════════════════════════════
+   SCREEN NAV
+══════════════════════════════════ */
 function show(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   const el=document.getElementById(id);
@@ -705,56 +786,46 @@ function saveSettings(){
   G.p1=n1||'Player 1';G.p2=n2||'Player 2';
   save();goHome();
 }
-function pickAge(el){
-  document.querySelectorAll('.age-btn').forEach(b=>b.classList.remove('sel'));
-  el.classList.add('sel');G.age=el.dataset.age;buildSugs();
-}
+function pickAge(el){document.querySelectorAll('.age-btn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');G.age=el.dataset.age;buildSugs()}
 function toggleOpt(k){G[k]=!G[k];document.getElementById('tgl-'+k).classList.toggle('on',G[k])}
 
-/* ═══════════════════════════════
+/* ══════════════════════════════════
    QUICK PLAY
-═══════════════════════════════ */
+══════════════════════════════════ */
 function quickPlay(mode){
   load();G.mode=mode;
   if(mode==='daily'){
     const today=getDailyKey();
-    const played=localStorage.getItem('wq_daily_'+today);
-    if(played){if(!confirm('You\'ve already played today\'s Daily Word! Play again?'))return}
+    if(localStorage.getItem('wq_daily_'+today)){
+      if(!confirm('You\'ve already played today\'s Daily Word! Play again?'))return;
+    }
     const dw=getDailyWord(G.age);
     G.word=dw.w;G.category=dw.c;
     launchWordle(false);
-  }else if(mode==='chill'){
-    // chill = random word, no timer, setter flow
-    G.mode='setter';
-    G.word='';G.category='';
-    prepWordEntry();show('swe');
   }else{
-    // h2h
-    G.word='';G.category='';
-    prepWordEntry();show('swe');
+    G.word='';G.category='';prepWordEntry();show('swe');
   }
 }
-
-// "New Word" button in daily mode
-function getRandomWord2(){
-  const dw=getRandomWord(G.age);
-  G.word=dw.w;G.category=dw.c;
-  launchWordle(false);
+function newRandomWord(){
+  const rw=randWord();G.word=rw.w;G.category=rw.c;launchWordle(false);
 }
-document.addEventListener('DOMContentLoaded',()=>{
-  document.getElementById('rand-word-btn').addEventListener('click',getRandomWord2);
-});
 
-/* ═══════════════════════════════
-   WORD ENTRY (H2H + chill)
-═══════════════════════════════ */
+/* ══════════════════════════════════
+   WORD ENTRY
+══════════════════════════════════ */
 function prepWordEntry(){
   document.getElementById('we-title').textContent='Your secret word';
-  document.getElementById('we-sub').textContent=`${G.p1}, type one word — ${G.p2} looks away!`;
-  document.getElementById('start-lbl').textContent=`Start — ${G.p2} is guessing!`;
-  document.getElementById('si').value='';document.getElementById('si').disabled=false;document.getElementById('si').style.opacity='1';
-  G.category='';buildCats();buildSugs();
+  document.getElementById('we-sub').textContent=G.mode==='h2h'
+    ?`${G.p1}, type a real English word — ${G.p2} looks away!`
+    :`Type a real English word to start.`;
+  document.getElementById('start-lbl').textContent=G.mode==='h2h'
+    ?`Start — ${G.p2} is guessing!`:`Start!`;
+  const inp=document.getElementById('si');
+  inp.value='';inp.disabled=false;inp.style.opacity='1';inp.classList.remove('show');
+  G.category='';
   document.getElementById('werr').textContent='';
+  document.getElementById('wcheck').style.display='none';
+  buildCats();buildSugs();
 }
 function buildCats(){
   const w=document.getElementById('cat-chips');w.innerHTML='';
@@ -762,315 +833,281 @@ function buildCats(){
 }
 function buildSugs(){
   const w=document.getElementById('sug-list');if(!w)return;w.innerHTML='';
-  const bank=BANK[G.age]||[];
-  const singles=bank.filter(e=>!e.w.includes(' '));
-  [...singles].sort(()=>Math.random()-.5).slice(0,10).forEach(({w:word,c})=>{
+  const bank=(BANK[G.age]||[]).filter(e=>!e.w.includes(' '));
+  [...bank].sort(()=>Math.random()-.5).slice(0,10).forEach(({w:word,c})=>{
     const el=document.createElement('div');el.className='sug';el.textContent=word;el.title=c;
-    el.onclick=()=>{document.getElementById('si').value=word;document.querySelectorAll('.cc').forEach(x=>x.classList.remove('active'));const m=document.querySelector(`.cc[data-cat="${c}"]`);if(m){m.classList.add('active');G.category=c}validateW()};
+    el.onclick=()=>{
+      const inp=document.getElementById('si');inp.value=word;
+      document.querySelectorAll('.cc').forEach(x=>x.classList.remove('active'));
+      const m=document.querySelector(`.cc[data-cat="${c}"]`);if(m){m.classList.add('active');G.category=c}
+      document.getElementById('werr').textContent='';
+      document.getElementById('wcheck').style.display='none';
+    };
     w.appendChild(el);
   });
 }
 function toggleShow(){document.getElementById('si').classList.toggle('show')}
-function validateW(){
-  const v=document.getElementById('si').value.trim().toUpperCase();
-  const e=document.getElementById('werr');
-  if(v.length<2){e.textContent='Word must be at least 2 letters.';return false}
-  if(/\s/.test(v)){e.textContent='One word only — no spaces!';return false}
-  if(!/^[A-Z]+$/.test(v)){e.textContent='Letters only — no numbers or symbols.';return false}
-  e.textContent='';return true;
+function onWordInput(){
+  // Strip anything that isn't a letter immediately
+  const inp=document.getElementById('si');
+  const v=inp.value.replace(/[^A-Za-z]/g,'');
+  if(inp.value!==v)inp.value=v;
+  document.getElementById('werr').textContent='';
+  document.getElementById('wcheck').style.display='none';
 }
-function startGame(){
-  if(!validateW())return;
-  const v=document.getElementById('si').value.trim().toUpperCase();
-  if(/\s/.test(v)){document.getElementById('werr').textContent='One word only — no spaces!';return}
-  G.word=v;
+
+async function startGame(){
+  const raw=document.getElementById('si').value.replace(/[^A-Za-z]/g,'').toUpperCase();
+  const err=document.getElementById('werr');
+  const chk=document.getElementById('wcheck');
+  err.textContent='';chk.style.display='none';
+
+  // Basic checks
+  if(raw.length<2){err.textContent='Word must be at least 2 letters.';return}
+  if(raw.includes(' ')){err.textContent='One word only — no spaces.';return}
+
+  const btn=document.getElementById('start-btn');
+  btn.disabled=true;
+  chk.style.display='block';
+
+  // Check dictionary — words from our suggestion list skip this (pre-warmed cache)
+  const real=await isRealWord(raw);
+
+  btn.disabled=false;
+  chk.style.display='none';
+
+  if(!real){
+    err.textContent=`"${raw.charAt(0)+raw.slice(1).toLowerCase()}" wasn't found in the English dictionary. Try another word, or choose one from the suggestions above.`;
+    return;
+  }
+
+  G.word=raw;G.category=G.category||'';
   launchWordle(G.mode==='h2h');
 }
 
-/* ═══════════════════════════════
-   COMPUTE TILE SIZE
-   Fits the grid + keyboard into the viewport
-═══════════════════════════════ */
-function computeTileSize(){
+/* ══════════════════════════════════
+   TILE & KEY SIZES
+   Compute so everything fits exactly
+   on the screen with no overflow.
+══════════════════════════════════ */
+function computeSizes(){
   const wLen=G.wordLen;
-  const vw=window.innerWidth,vh=window.innerHeight;
-  // available height for grid (exclude header ~60px, keyboard ~210px, sub-row ~40px, padding ~40px)
-  const availH=vh-60-220-40-40;
-  const availW=vw-32; // 16px padding each side
-  // fit by width: (ts+5)*wordLen - 5 <= availW  => ts=(availW+5)/wordLen - 5
-  const tsByW=Math.floor((availW+5)/wLen)-5;
-  // fit by height: (ts+5)*5 - 5 <= availH => ts=(availH+5)/5 - 5
-  const tsByH=Math.floor((availH+5)/MAX_GUESSES)-5;
-  const ts=Math.max(32,Math.min(tsByW,tsByH,60));
-  document.documentElement.style.setProperty('--ts',ts+'px');
+  // Use screen.width as a floor on Android (window.innerWidth can lie)
+  const vw=Math.min(window.innerWidth, window.screen?.width||9999);
+  const vh=window.innerHeight;
+
+  // Fixed heights in game screen (approximations)
+  const HDR=58,    // game-header
+        HINT=0,    // hint usually hidden; only add if shown
+        SUB=34,    // game-sub row
+        KB_GAP=5,  // gap between kb rows
+        PAD_V=20;  // top+bottom padding in #sg
+
+  // Key height budget: aim for 52px, min 40px
+  let kh=52;
+  if(vh<600) kh=44;
+  if(vh<500) kh=38;
+
+  const KB_H = 3*(kh+KB_GAP) + KB_GAP + 8; // 3 rows + padding bottom
+
+  const hintShown = G.hint ? 34 : 0;
+  const aiShown   = 0; // hidden at launch
+  const gridAvailH = vh - HDR - hintShown - aiShown - SUB - KB_H - PAD_V - 16;
+  const gridAvailW = vw - 16; // 8px each side
+
+  // Tile by width: (ts + gap)*n - gap ≤ availW  →  ts = (availW+gap)/n - gap
+  const GAP = 5;
+  let tsByW = Math.floor((gridAvailW + GAP) / wLen) - GAP;
+  let tsByH = Math.floor((gridAvailH + GAP) / MAX_GUESSES) - GAP;
+  let ts = Math.max(28, Math.min(tsByW, tsByH, 64));
+
+  document.documentElement.style.setProperty('--ts', ts+'px');
+  document.documentElement.style.setProperty('--kh', kh+'px');
 }
 
-/* ═══════════════════════════════
-   BUILD WORDLE GRID
-═══════════════════════════════ */
+/* ══════════════════════════════════
+   BUILD GRID
+══════════════════════════════════ */
 function buildGrid(){
-  const grid=document.getElementById('wgrid');
-  grid.innerHTML='';
+  const grid=document.getElementById('wgrid');grid.innerHTML='';
   for(let r=0;r<MAX_GUESSES;r++){
-    const row=document.createElement('div');
-    row.className='grid-row';row.id='row-'+r;
+    const row=document.createElement('div');row.className='grid-row';row.id='row-'+r;
     for(let c=0;c<G.wordLen;c++){
-      const t=document.createElement('div');
-      t.className='wt';t.id=`t-${r}-${c}`;
+      const t=document.createElement('div');t.className='wt';t.id=`t-${r}-${c}`;
       row.appendChild(t);
     }
     grid.appendChild(row);
   }
 }
 
-/* ═══════════════════════════════
-   BUILD WORDLE KEYBOARD
-═══════════════════════════════ */
+/* ══════════════════════════════════
+   BUILD KEYBOARD
+   Uses pointerdown so Android Chrome
+   fires immediately without 300ms delay.
+══════════════════════════════════ */
 function buildKb(){
-  const wrap=document.getElementById('wkb');
-  wrap.innerHTML='';
-  const rows=[['Q','W','E','R','T','Y','U','I','O','P'],['A','S','D','F','G','H','J','K','L'],['ENTER','Z','X','C','V','B','N','M','⌫']];
-  rows.forEach(row=>{
+  const wrap=document.getElementById('wkb');wrap.innerHTML='';
+  const ROWS=[['Q','W','E','R','T','Y','U','I','O','P'],['A','S','D','F','G','H','J','K','L'],['ENTER','Z','X','C','V','B','N','M','⌫']];
+  ROWS.forEach(row=>{
     const r=document.createElement('div');r.className='kb-row2';
     row.forEach(l=>{
       const k=document.createElement('button');
-      k.className='wkey'+(l.length>1?' wide':'');
+      k.type='button';k.className='wkey'+(l.length>1?' wide':'');
       k.dataset.key=l;k.textContent=l;
-      k.setAttribute('type','button');
-      k.addEventListener('click',()=>handleKey(l));
-      wrap.appendChild ? null : null; // unused
+      // pointerdown fires before touchend — eliminates 300ms tap delay on Android
+      k.addEventListener('pointerdown',ev=>{ev.preventDefault();handleKey(l)});
       r.appendChild(k);
     });
     wrap.appendChild(r);
   });
 }
 
-/* ═══════════════════════════════
+/* ══════════════════════════════════
    LAUNCH WORDLE
-═══════════════════════════════ */
+══════════════════════════════════ */
 function launchWordle(doCountdown){
   G.wordLen=G.word.length;
   G.guesses=[];G.current='';G.gameOver=false;
-  G.swMs=0;G.swRunning=false;G.aiUsed=false;
-  clearInterval(G.swInt);
+  G.swMs=0;G.swRunning=false;G.aiUsed=false;clearInterval(G.swInt);
 
-  // Header
-  document.getElementById('gh-title').textContent=G.mode==='daily'?'Daily Word':G.mode==='h2h'?'Head-to-Head':'Chill Mode';
-  document.getElementById('gh-mode').textContent=`${G.p2} guessing · ${G.wordLen} letters`;
+  const isH2H=G.mode==='h2h';
+  const isDaily=G.mode==='daily';
+  const isChill=!isH2H&&!isDaily;
 
-  // Timer display
+  document.getElementById('gh-title').textContent=isDaily?'Daily Word':isH2H?'Head-to-Head':'Chill Mode';
+  document.getElementById('gh-mode').textContent=`${G.p2} · ${G.wordLen} letters · ${MAX_GUESSES} tries`;
+
   const swEl=document.getElementById('sw');
-  if(G.mode==='chill'||G.mode==='setter'){swEl.textContent='∞';swEl.className='sw-disp'}
-  else{swEl.textContent='0:00';swEl.className='sw-disp'}
+  swEl.className='sw-disp';swEl.textContent=isChill?'∞':'0:00';
 
-  // Hint
   const hb=document.getElementById('hint-bar');
-  if(G.hint){document.getElementById('hint-txt').textContent=`First letter: ${G.word[0]} · ${G.wordLen} letters`;hb.classList.add('show')}else hb.classList.remove('show');
+  if(G.hint){document.getElementById('hint-txt').textContent=`First letter: ${G.word[0]} · ${G.wordLen} letters`;hb.classList.add('show')}
+  else hb.classList.remove('show');
 
-  // AI btn
   document.getElementById('ai-btn').style.display=G.ai?'':'none';
   document.getElementById('ai-btn').disabled=false;
   document.getElementById('ai-bar').classList.remove('show');
 
-  // Category
   const ct=document.getElementById('cat-tag');
-  if(G.category){document.getElementById('cat-ico').textContent=CICO[G.category]||'🔤';document.getElementById('cat-lbl').textContent=G.category;ct.style.display='flex'}else ct.style.display='none';
+  if(G.category){document.getElementById('cat-ico').textContent=CICO[G.category]||'🔤';document.getElementById('cat-lbl').textContent=G.category;ct.classList.add('show')}
+  else ct.classList.remove('show');
 
-  // Show "New Word" only for daily / random
-  document.getElementById('rand-word-btn').style.display=(G.mode==='daily')?'':'none';
+  document.getElementById('rand-btn').style.display=isDaily?'':'none';
 
-  computeTileSize();
-  buildGrid();
-  buildKb();
-  resetKeyboard();
+  computeSizes();buildGrid();buildKb();resetKbState();
 
   if(doCountdown){
-    countdown(()=>{show('sg');if(G.mode!=='chill'&&G.mode!=='setter')autoSW()});
+    countdown(()=>{show('sg');if(!isChill)autoSW()});
   }else{
-    show('sg');
-    if(G.mode!=='chill'&&G.mode!=='setter')autoSW();
+    show('sg');if(!isChill)autoSW();
   }
 }
 
-/* ═══════════════════════════════
-   KEYBOARD INPUT HANDLING
-═══════════════════════════════ */
+/* ══════════════════════════════════
+   KEY INPUT
+══════════════════════════════════ */
 function handleKey(key){
   if(G.gameOver)return;
   if(key==='ENTER'){submitGuess();return}
-  if(key==='⌫'||key==='Backspace'||key==='DELETE'){deleteLetter();return}
+  if(key==='⌫'||key==='Backspace'){deleteLetter();return}
   if(/^[A-Z]$/.test(key)&&G.current.length<G.wordLen){
-    addLetter(key);
+    G.current+=key;sndKey();
+    const t=document.getElementById(`t-${G.guesses.length}-${G.current.length-1}`);
+    if(t){t.textContent=key;t.classList.add('filled')}
   }
 }
-function addLetter(l){
-  if(G.current.length>=G.wordLen)return;
-  G.current+=l;
-  sndKey();
-  const row=G.guesses.length,col=G.current.length-1;
-  const t=document.getElementById(`t-${row}-${col}`);
-  if(t){t.textContent=l;t.classList.add('filled')}
-}
 function deleteLetter(){
-  if(G.current.length===0)return;
-  G.current=G.current.slice(0,-1);
+  if(!G.current.length)return;
   sndDel();
-  const row=G.guesses.length,col=G.current.length;
-  const t=document.getElementById(`t-${row}-${col}`);
+  const col=G.current.length-1;G.current=G.current.slice(0,-1);
+  const t=document.getElementById(`t-${G.guesses.length}-${col}`);
   if(t){t.textContent='';t.classList.remove('filled')}
 }
 
-/* ═══════════════════════════════
-   EVALUATE GUESS (Wordle logic)
-   Returns array of {letter,state}
-   state: 'correct'|'present'|'absent'
-═══════════════════════════════ */
-function evaluateGuess(guess){
-  const result=Array(G.wordLen).fill('absent');
-  const wordArr=G.word.split('');
-  const guessArr=guess.split('');
-  const wordLeft=wordArr.slice();
-
-  // First pass: correct positions
+/* ══════════════════════════════════
+   EVALUATE GUESS
+══════════════════════════════════ */
+function evalGuess(guess){
+  const res=Array(G.wordLen).fill('absent');
+  const left=G.word.split('');
+  // Pass 1: correct positions
+  for(let i=0;i<G.wordLen;i++){if(guess[i]===G.word[i]){res[i]='correct';left[i]=null}}
+  // Pass 2: present (wrong position)
   for(let i=0;i<G.wordLen;i++){
-    if(guessArr[i]===wordArr[i]){result[i]='correct';wordLeft[i]=null}
+    if(res[i]==='correct')continue;
+    const idx=left.indexOf(guess[i]);if(idx!==-1){res[i]='present';left[idx]=null}
   }
-  // Second pass: present (wrong position)
-  for(let i=0;i<G.wordLen;i++){
-    if(result[i]==='correct')continue;
-    const idx=wordLeft.indexOf(guessArr[i]);
-    if(idx!==-1){result[i]='present';wordLeft[idx]=null}
-  }
-  return result;
+  return res;
 }
 
-/* ═══════════════════════════════
+/* ══════════════════════════════════
    SUBMIT GUESS
-═══════════════════════════════ */
+══════════════════════════════════ */
 function submitGuess(){
-  if(G.gameOver)return;
-  if(G.current.length<G.wordLen){
-    showToast('Not enough letters');
-    shakeRow(G.guesses.length);
-    sndWrong();
-    return;
-  }
-
+  if(G.gameOver||G.current.length<G.wordLen){showToast('Not enough letters');shakeRow(G.guesses.length);sndBad();return}
   const guess=G.current;
-  const eval_=evaluateGuess(guess);
+  const ev=evalGuess(guess);
   const rowIdx=G.guesses.length;
-  G.guesses.push(guess);
-  G.current='';
+  G.guesses.push(guess);G.current='';
 
-  // Animate tiles: flip and colour
-  revealRow(rowIdx,guess,eval_,()=>{
-    updateKeyboard(guess,eval_);
-    const won=eval_.every(s=>s==='correct');
-    if(won){
-      stopSW();
-      // Bounce animation
-      for(let c=0;c<G.wordLen;c++){
-        const t=document.getElementById(`t-${rowIdx}-${c}`);
-        if(t){t.style.setProperty('--bd',c*.06+'s');t.classList.add('bounce')}
-      }
-      setTimeout(()=>endGame(true),G.wordLen*80+500);
-    }else if(G.guesses.length>=MAX_GUESSES){
-      stopSW();
-      setTimeout(()=>endGame(false),400);
-    }
+  revealRow(rowIdx,guess,ev,()=>{
+    updateKb(guess,ev);
+    const won=ev.every(s=>s==='correct');
+    if(won){stopSW();for(let c=0;c<G.wordLen;c++){const t=document.getElementById(`t-${rowIdx}-${c}`);if(t){t.style.setProperty('--bd',c*.06+'s');t.classList.add('bounce')}}setTimeout(()=>endGame(true),G.wordLen*70+480)}
+    else if(G.guesses.length>=MAX_GUESSES){stopSW();setTimeout(()=>endGame(false),350)}
   });
 }
 
-/* Flip tiles with colour reveal */
-function revealRow(rowIdx,guess,eval_,cb){
-  const delay=300; // ms per tile
+/* Flip reveal animation — colour appears mid-flip so the state change is hidden */
+function revealRow(rowIdx,guess,ev,cb){
+  const TILE_DELAY=280;
   for(let c=0;c<G.wordLen;c++){
-    const t=document.getElementById(`t-${rowIdx}-${c}`);
-    if(!t)continue;
-    const fd=c*delay/1000;
+    const t=document.getElementById(`t-${rowIdx}-${c}`);if(!t)continue;
+    const fd=c*TILE_DELAY/1000;
     t.style.setProperty('--fd',fd+'s');
     t.classList.remove('filled');
     t.classList.add('flip');
-    setTimeout(()=>{
-      t.classList.add(eval_[c]);
-    },(fd*1000)+(delay/2));
+    // Apply colour at exactly the halfway point of the flip
+    setTimeout(()=>t.classList.add(ev[c]),(fd*1000)+(TILE_DELAY*0.5));
   }
-  setTimeout(cb, G.wordLen*delay+100);
+  setTimeout(cb, G.wordLen*TILE_DELAY+120);
 }
+function shakeRow(r){const row=document.getElementById('row-'+r);if(!row)return;row.classList.remove('shake');void row.offsetWidth;row.classList.add('shake');setTimeout(()=>row.classList.remove('shake'),500)}
 
-/* Shake invalid row */
-function shakeRow(rowIdx){
-  const row=document.getElementById('row-'+rowIdx);
-  if(!row)return;
-  row.classList.remove('shake');void row.offsetWidth;row.classList.add('shake');
-  setTimeout(()=>row.classList.remove('shake'),600);
-}
-
-/* ═══════════════════════════════
-   KEYBOARD COLOURING
-   Only show correct/present — absent keys go grey but NOT the letter shown
-   (matches Wordle: absent letters fade, but we DO show them on tiles)
-═══════════════════════════════ */
-// key state priority: correct > present > absent
-const keyState={};
-function resetKeyboard(){for(const k in keyState)delete keyState[k];document.querySelectorAll('.wkey').forEach(k=>{k.className='wkey'+(k.textContent.length>1?' wide':'')})}
-function updateKeyboard(guess,eval_){
+/* ══════════════════════════════════
+   KEYBOARD STATE
+══════════════════════════════════ */
+const kbState={};
+function resetKbState(){for(const k in kbState)delete kbState[k];document.querySelectorAll('.wkey').forEach(k=>{k.className='wkey'+(k.textContent.length>1?' wide':'')})}
+function updateKb(guess,ev){
   for(let i=0;i<G.wordLen;i++){
-    const l=guess[i],s=eval_[i];
-    const prev=keyState[l];
-    if(s==='correct'||(s==='present'&&prev!=='correct')||(!prev&&s==='absent')){
-      keyState[l]=s;
-    }
+    const l=guess[i],s=ev[i],prev=kbState[l];
+    if(s==='correct'||(s==='present'&&prev!=='correct')||(!prev&&s==='absent'))kbState[l]=s;
   }
   document.querySelectorAll('.wkey').forEach(k=>{
     const l=k.dataset.key;
-    if(keyState[l]){
-      k.className='wkey'+(k.textContent.length>1?' wide':'')+' '+keyState[l];
-    }
+    if(kbState[l])k.className='wkey'+(k.textContent.length>1?' wide':'')+' '+kbState[l];
   });
 }
 
-/* ═══════════════════════════════
+/* ══════════════════════════════════
    END GAME
-═══════════════════════════════ */
+══════════════════════════════════ */
 function endGame(won){
   G.gameOver=true;
-  if(won){
-    sndWin();
-    launchConfetti();
-    showToast(won?getWinMsg(G.guesses.length):'');
-  }else{
-    sndLose();
-    showToast(G.word,3500);
-  }
-  setTimeout(()=>showResult(!won),won?1600:1200);
+  if(won){sndWin();launchConfetti();showToast(['Genius!','Magnificent!','Impressive!','Great!','Phew!'][Math.min(G.guesses.length-1,4)])}
+  else{sndLose();showToast(G.word,3500)}
+  setTimeout(()=>showResult(!won),won?1700:1300);
 }
-function getWinMsg(n){const m=['Genius!','Magnificent!','Impressive!','Splendid!','Great!'];return m[Math.min(n-1,4)]||'Phew!'}
-
-/* ═══════════════════════════════
-   TOAST
-═══════════════════════════════ */
-let toastTimer=null;
-function showToast(msg,dur){
-  const t=document.getElementById('toast');
-  t.textContent=msg;t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer=setTimeout(()=>t.classList.remove('show'),dur||1800);
-}
-
-/* ═══════════════════════════════
-   GIVE UP
-═══════════════════════════════ */
 function giveUp(){
   if(!confirm('Give up and reveal the word?'))return;
-  G.gameOver=true;stopSW();
-  showToast(G.word,3000);
+  G.gameOver=true;stopSW();showToast(G.word,3000);
   setTimeout(()=>showResult(true,true),1200);
 }
 
-/* ═══════════════════════════════
+/* ══════════════════════════════════
    TIMER
-═══════════════════════════════ */
+══════════════════════════════════ */
 function autoSW(){G.swMs=0;startSW()}
 function startSW(){
   if(G.swRunning)return;G.swRunning=true;
@@ -1084,18 +1121,24 @@ function stopSW(){
 }
 function fmt(ms){const s=Math.floor(ms/1000),m=Math.floor(s/60),sec=s%60;return`${m}:${sec.toString().padStart(2,'0')}`}
 
-/* ═══════════════════════════════
+/* ══════════════════════════════════
+   TOAST
+══════════════════════════════════ */
+let _tt=null;
+function showToast(msg,dur){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(_tt);_tt=setTimeout(()=>t.classList.remove('show'),dur||1800)}
+
+/* ══════════════════════════════════
    AI HINT
-═══════════════════════════════ */
+══════════════════════════════════ */
 async function getAiHint(){
   if(G.aiUsed)return;G.aiUsed=true;
   document.getElementById('ai-btn').disabled=true;
   const bar=document.getElementById('ai-bar'),txt=document.getElementById('ai-txt');
   bar.classList.add('show');
   txt.innerHTML='<div class="ai-pulse"><span></span><span></span><span></span></div>';
-  const known=G.guesses.map(g=>evaluateGuess(g).map((s,i)=>s==='correct'?g[i]:'_').join('')).pop()||'_'.repeat(G.wordLen);
-  const wrongs=Object.entries(keyState).filter(([,v])=>v==='absent').map(([k])=>k).join(',')||'none';
-  const prompt=`Family word game. Secret word: "${G.word}". Best guess so far: "${known}". Letters not in word: ${wrongs}. Give ONE short playful clue (max 15 words) about the word's meaning. No letters from the word. Just the clue.`;
+  const known=G.guesses.map(g=>evalGuess(g).map((s,i)=>s==='correct'?g[i]:'_').join('')).pop()||'_'.repeat(G.wordLen);
+  const wrongs=Object.entries(kbState).filter(([,v])=>v==='absent').map(([k])=>k).join(',')||'none';
+  const prompt=`Family word game WordQuest. Secret word: "${G.word}". Player's best revealed: "${known}". Absent letters: ${wrongs}. Give ONE short playful clue (max 15 words) about the word's meaning. Do NOT use any letters from the word. Just the clue.`;
   try{
     const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:80,messages:[{role:'user',content:prompt}]})});
     const data=await res.json();
@@ -1103,48 +1146,40 @@ async function getAiHint(){
   }catch(e){txt.textContent='Think carefully — you\'re closer than you think! 💪'}
 }
 
-/* ═══════════════════════════════
-   RESULT SCREEN
-═══════════════════════════════ */
+/* ══════════════════════════════════
+   RESULT
+══════════════════════════════════ */
 function showResult(gaveUp,forced){
-  const guessCount=G.guesses.length;
-  const won=!gaveUp&&!forced;
-  const score=won?calcScore(G.swMs,guessCount):0;
+  const gc=G.guesses.length,won=!gaveUp&&!forced;
+  const score=won?Math.max(5,Math.min(100,100-gc*15-(G.swMs>0?Math.floor(G.swMs/10000)*5:0))):0;
   G.totalGames++;
   if(won){
     G.totalWords++;
-    if(G.mode!=='chill'&&G.mode!=='setter'&&G.swMs>0&&G.swMs<G.bestMs)G.bestMs=G.swMs;
-    G.lb.push({name:G.p2,ms:G.swMs,guesses:guessCount,word:G.word,score,date:new Date().toLocaleDateString()});
+    const isChill=G.mode!=='h2h'&&G.mode!=='daily';
+    if(!isChill&&G.swMs>0&&G.swMs<G.bestMs)G.bestMs=G.swMs;
+    G.lb.push({name:G.p2,ms:G.swMs,guesses:gc,word:G.word,score,date:new Date().toLocaleDateString()});
     G.lb.sort((a,b)=>a.guesses-b.guesses||a.ms-b.ms);
     if(G.lb.length>10)G.lb.pop();
-    if(G.mode==='daily')localStorage.setItem('wq_daily_'+getDailyKey(),'1');
+    if(G.mode==='daily')try{localStorage.setItem('wq_daily_'+getDailyKey(),'1')}catch(e){}
   }
   save();
-
   document.getElementById('trophy').textContent=gaveUp?'😅':score>=80?'🏆':score>=60?'🥇':'🎉';
   document.getElementById('res-title').textContent=gaveUp?'Better luck next time!':'Word cracked!';
-  document.getElementById('res-sub').textContent=gaveUp?`The word was ${G.word}`:`${G.p2} got it in ${guessCount} guess${guessCount!==1?'es':''}!`;
+  document.getElementById('res-sub').textContent=gaveUp?`The word was ${G.word}`:`${G.p2} got it in ${gc} guess${gc!==1?'es':''}!`;
   document.getElementById('res-word').textContent=G.word;
-  document.getElementById('rs-time').textContent=G.mode==='chill'||G.mode==='setter'?'∞':fmt(G.swMs);
-  document.getElementById('rs-guesses').textContent=guessCount+'/'+MAX_GUESSES;
+  document.getElementById('rs-time').textContent=(G.mode!=='h2h'&&G.mode!=='daily')?'∞':fmt(G.swMs);
+  document.getElementById('rs-guesses').textContent=gc+'/'+MAX_GUESSES;
   document.getElementById('rs-score').textContent=gaveUp?'0':score;
-
   document.getElementById('daily-reset-wrap').style.display=G.mode==='daily'?'flex':'none';
-  renderLb();
-  show('sr');
-}
-function calcScore(ms,guesses){
-  let s=100-guesses*15;
-  if(ms>0)s-=Math.floor(ms/10000)*5;
-  return Math.max(5,Math.min(100,s));
+  renderLb();show('sr');
 }
 function renderLb(){
   const body=document.getElementById('lb-body');body.innerHTML='';
-  if(!G.lb.length){body.innerHTML='<div style="padding:1rem;text-align:center;color:var(--muted);font-size:.78rem">Play a game to set records!</div>';return}
+  if(!G.lb.length){body.innerHTML='<div style="padding:1rem;text-align:center;color:var(--muted);font-size:.77rem">Play a game to set records!</div>';return}
   G.lb.forEach((e,i)=>{
     const medals=['🥇','🥈','🥉'];
     const r=document.createElement('div');r.className='lb-row2';
-    r.innerHTML=`<div class="lb-rank">${medals[i]||i+1}</div><div class="lb-name">${esc(e.name)}<br><span style="font-size:.64rem;color:var(--muted);font-weight:400">${esc(e.word)}</span></div><div class="lb-meta"><div class="lb-time">${e.ms>0?fmt(e.ms):'∞'}</div><div class="lb-letters">${e.guesses} guesses</div></div>`;
+    r.innerHTML=`<div class="lb-rank">${medals[i]||i+1}</div><div class="lb-name">${esc(e.name)}<br><span style="font-size:.62rem;color:var(--muted);font-weight:400">${esc(e.word)}</span></div><div class="lb-meta"><div class="lb-time">${e.ms>0?fmt(e.ms):'∞'}</div><div class="lb-letters">${e.guesses}g</div></div>`;
     body.appendChild(r);
   });
 }
@@ -1162,37 +1197,36 @@ function showLb(){
 }
 function switchRoles(){const t=G.p1;G.p1=G.p2;G.p2=t;save();goHome()}
 
-/* ═══════════════════════════════
+/* ══════════════════════════════════
    COUNTDOWN
-═══════════════════════════════ */
+══════════════════════════════════ */
 function countdown(cb){
   const ov=document.getElementById('cdov'),num=document.getElementById('cdnum');
   ov.style.display='flex';let n=3;num.textContent=n;sndCD();
   const iv=setInterval(()=>{n--;
-    if(n<=0){clearInterval(iv);num.textContent='GO!';document.getElementById('cd-lbl').textContent='';sndGo();setTimeout(()=>{ov.style.display='none';document.getElementById('cd-lbl').textContent='Get ready...';cb()},700)}
-    else{num.textContent=n;num.style.animation='none';void num.offsetWidth;num.style.animation='cdPop .75s var(--ease)';sndCD()}
+    if(n<=0){clearInterval(iv);num.textContent='GO!';document.getElementById('cd-lbl').textContent='';sndGo();setTimeout(()=>{ov.style.display='none';document.getElementById('cd-lbl').textContent='Get ready...';cb()},680)}
+    else{num.textContent=n;num.style.animation='none';void num.offsetWidth;num.style.animation='cdPop .7s var(--ease)';sndCD()}
   },900);
 }
 
-/* ═══════════════════════════════
+/* ══════════════════════════════════
    CONFETTI
-═══════════════════════════════ */
+══════════════════════════════════ */
 function launchConfetti(){
   const w=document.getElementById('cfwrap');w.innerHTML='';
   const cols=['#8b5cf6','#4ade80','#f5c842','#ff6b8a','#00d9c4','#fff'];
-  for(let i=0;i<80;i++){
+  for(let i=0;i<75;i++){
     const p=document.createElement('div');p.className='cp';
-    const col=cols[Math.floor(Math.random()*cols.length)];
-    const ww=Math.random()*10+5,hh=Math.random()*8+4;
-    p.style.cssText=`left:${Math.random()*100}%;background:${col};width:${ww}px;height:${hh}px;border-radius:${Math.random()>.5?'50%':'2px'};--d:${(Math.random()*2+1.5).toFixed(1)}s;--dl:${(Math.random()*.8).toFixed(2)}s;--dx:${(Math.random()*220-110).toFixed(0)}px;--rr:${Math.floor(Math.random()*720)}deg`;
+    const col=cols[i%cols.length],ww=Math.random()*9+5,hh=Math.random()*7+4;
+    p.style.cssText=`left:${Math.random()*100}%;background:${col};width:${ww}px;height:${hh}px;border-radius:${Math.random()>.5?'50%':'2px'};--d:${(Math.random()*2+1.4).toFixed(1)}s;--dl:${(Math.random()*.7).toFixed(2)}s;--dx:${(Math.random()*200-100).toFixed(0)}px;--rr:${Math.floor(Math.random()*720)}deg`;
     w.appendChild(p);
   }
   setTimeout(()=>w.innerHTML='',5000);
 }
 
-/* ═══════════════════════════════
+/* ══════════════════════════════════
    PHYSICAL KEYBOARD
-═══════════════════════════════ */
+══════════════════════════════════ */
 document.addEventListener('keydown',e=>{
   const s=document.querySelector('.screen.active');
   if(!s||s.id!=='sg')return;
@@ -1202,28 +1236,27 @@ document.addEventListener('keydown',e=>{
   else{const k=e.key.toUpperCase();if(/^[A-Z]$/.test(k))handleKey(k)}
 });
 
-/* ═══════════════════════════════
-   RESIZE HANDLER
-═══════════════════════════════ */
-window.addEventListener('resize',()=>{
-  if(document.querySelector('.screen.active')?.id==='sg')computeTileSize();
-});
+/* ══════════════════════════════════
+   RESIZE
+══════════════════════════════════ */
+let _rt=null;
+window.addEventListener('resize',()=>{clearTimeout(_rt);_rt=setTimeout(()=>{if(document.querySelector('.screen.active')?.id==='sg')computeSizes()},120)});
 
-/* ═══════════════════════════════
+/* ══════════════════════════════════
    UTIL
-═══════════════════════════════ */
+══════════════════════════════════ */
 function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 
-/* ═══════════════════════════════
+/* ══════════════════════════════════
    BOOT
-═══════════════════════════════ */
+══════════════════════════════════ */
 load();
 window.addEventListener('DOMContentLoaded',()=>{
   setTimeout(()=>{
-    const loader=document.getElementById('screen-loading');
+    const loader=document.getElementById('sl');
     loader.classList.add('out');
-    setTimeout(()=>{loader.style.display='none';goHome()},560);
-  },2500); // 2.5 second loading
+    setTimeout(()=>{loader.style.display='none';goHome()},550);
+  },2500);
 });
 </script>
 </body>
